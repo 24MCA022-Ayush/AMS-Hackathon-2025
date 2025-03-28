@@ -177,7 +177,7 @@
                     // Display error message
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'alert alert-danger';
-                    errorMsg.innerHTML = <strong>Error (${data.phase || 'unknown'}):</strong> ${data.message || data.error};
+                    errorMsg.innerHTML = '<strong>Error (' + (data.phase || 'unknown') + '):</strong> ' + (data.message || data.error);
                     resultsContainer.appendChild(errorMsg);
                     scoreDisplay.innerHTML = '';
                 } else if (data.results) {
@@ -209,7 +209,7 @@
                     // Display individual test cases
                     data.results.forEach((result) => {
                         const testCase = document.createElement('div');
-                        testCase.className = test-case ${result.passed ? 'pass' : 'fail'};
+                        testCase.className = 'test-case ' + (result.passed ? 'pass' : 'fail');
                         
                         testCase.innerHTML = `
                             <h5>Test Case ${result.id}: ${result.passed ? 'Passed' : 'Failed'}</h5>
