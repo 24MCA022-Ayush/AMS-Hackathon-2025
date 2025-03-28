@@ -5,122 +5,576 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hackathon Code Submission</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            padding-bottom: 50px;
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-purple: #d442fe;
+            --neon-yellow: #ffd319;
+            --dark-bg: #0c0c14;
+            --darker-bg: #05050a;
+            --card-bg: #141428;
+            --success-color: #00ff9f;
+            --fail-color: #ff2a6d;
         }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: #dedede;
+            font-family: 'Rajdhani', sans-serif;
+            padding-bottom: 50px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent),
+                linear-gradient(90deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .glitch {
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            14% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            15% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            49% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            50% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            99% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            100% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+        }
+        
         .container {
             max-width: 900px;
+            position: relative;
+            z-index: 2;
         }
+        
         .header {
-            background-color: #563d7c;
-            color: white;
+            background-color: var(--darker-bg);
+            color: var(--neon-blue);
             padding: 2rem 0;
             margin-bottom: 2rem;
+            border-bottom: 1px solid var(--neon-blue);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+            animation: border-flow 3s linear infinite;
+        }
+        
+        @keyframes border-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-blue);
+            filter: blur(4px);
+        }
+        
+        h1, h3, h5 {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .blink {
+            animation: blink 1.5s steps(2) infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
         .results {
             margin-top: 30px;
         }
+        
         .test-case {
             margin-bottom: 15px;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 0;
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
+        
+        .test-case:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 217, 232, 0.2);
+        }
+        
         .pass {
-            background-color: #d4edda;
-            border-left: 5px solid #28a745;
+            border-left: 5px solid var(--success-color);
         }
+        
         .fail {
-            background-color: #f8d7da;
-            border-left: 5px solid #dc3545;
+            border-left: 5px solid var(--fail-color);
         }
+        
+        .pass::after, .fail::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background-color: var(--card-bg);
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
+        }
+        
+        .pass::after {
+            background-color: var(--success-color);
+        }
+        
+        .fail::after {
+            background-color: var(--fail-color);
+        }
+        
         .score-badge {
-            font-size: 1.1rem;
+            font-size: 1rem;
             padding: 8px 16px;
+            background-color: var(--card-bg);
+            border: 1px solid;
+            border-radius: 0;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .score-badge::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
         .instructions {
-            background-color: #f8f9fa;
+            background-color: var(--card-bg);
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 0;
             margin-bottom: 20px;
+            border: 1px solid var(--neon-purple);
+            position: relative;
+            overflow: hidden;
         }
-        pre {
-            border-radius: 8px;
-            padding: 10px;
-            background-color: #f5f5f5;
+        
+        .instructions::before {
+            content: "<<MISSION_BRIEFING>>";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--dark-bg);
+            padding: 0 10px;
+            color: var(--neon-purple);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
         }
-        .loader {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #563d7c;
+        
+        .instructions::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--neon-purple) 0%, transparent 70%);
+            opacity: 0.1;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 2s linear infinite;
-            margin: 20px auto;
         }
+        
+        pre {
+            border-radius: 0;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        .loader::before, .loader::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--neon-pink);
+        }
+        
+        .loader::before {
+            z-index: 100;
+            animation: spin 1s infinite;
+        }
+        
+        .loader::after {
+            border: 3px solid var(--neon-blue);
+            opacity: 0.2;
+        }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .form-control, .btn {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            color: #dedede;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .form-control:focus {
+            background-color: rgba(20, 20, 40, 0.8);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 0.25rem rgba(5, 217, 232, 0.25);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn-primary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            transition: all 0.3s;
+            z-index: -1;
+        }
+        
+        .btn-primary:hover::before {
+            left: 0;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(212, 66, 254, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .form-text {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+        }
+        
+        .form-label {
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        #submission-form {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border: 1px solid var(--neon-blue);
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        #submission-form::before {
+            content: "<<CODE_UPLOAD>>";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--dark-bg);
+            padding: 0 10px;
+            color: var(--neon-blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+        }
+        
+        .language-badge {
+            padding: 5px 10px;
+            border-radius: 0;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        
+        /* Matrix canvas */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.2;
+        }
+        
+        /* Success/Failure overlays */
+        .success-overlay, .failure-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 159, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        
+        .failure-overlay {
+            background-color: rgba(255, 42, 109, 0.2);
+        }
+        
+        .success-message, .failure-message {
+            font-size: 3rem;
+            color: var(--success-color);
+            text-shadow: 0 0 10px var(--success-color);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-weight: bold;
+            animation: pulsate 2s infinite;
+        }
+        
+        .failure-message {
+            color: var(--fail-color);
+            text-shadow: 0 0 10px var(--fail-color);
+        }
+        
+        @keyframes pulsate {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(0.95); }
+        }
+        
+        /* Cyberpunk decorative elements */
+        .cyber-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+        }
+        
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--neon-blue);
+            border-left: 2px solid var(--neon-blue);
+        }
+        
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--neon-pink);
+            border-right: 2px solid var(--neon-pink);
+        }
+        
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--neon-purple);
+            border-left: 2px solid var(--neon-purple);
+        }
+        
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--neon-yellow);
+            border-right: 2px solid var(--neon-yellow);
+        }
+        
+        /* Digital counter effect */
+        .digital-counter {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-blue);
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border: 1px solid var(--neon-blue);
+            display: inline-block;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
+    <!-- Matrix canvas -->
+    <canvas id="matrix-canvas"></canvas>
+    <div class="scanlines"></div>
+    
+    <!-- Success/Failure overlays -->
+    <div id="success-overlay" class="success-overlay">
+        <div class="success-message" id="success-message">
+            ACCESS GRANTED!<br>PROCEED TO NEXT LEVEL
+        </div>
+    </div>
+    <div id="failure-overlay" class="failure-overlay">
+        <div class="failure-message" id="failure-message">
+            ACCESS DENIED!<br>EXECUTION FAILED
+        </div>
+    </div>
+    
     <div class="header">
         <div class="container">
-            <h1>Hackathon Code Submission System</h1>
-            <p class="lead mb-0">Submit your C++ solutions and see instant test results</p>
+            <h1 class="glitch"><i class="fas fa-microchip me-2"></i>AMS HACKATHON CODE SUBMISSION</h1>
+            <p class="lead mb-0">Submit your code and see instant test results <span class="blink">_</span></p>
         </div>
     </div>
 
     <div class="container">
         <div class="instructions">
-            <h3>Problem Statement: Sum of Two Numbers</h3>
-            <p>Write a program that reads two integers from standard input and outputs their sum to standard output.</p>
+            <div class="cyber-corner corner-tl"></div>
+            <div class="cyber-corner corner-tr"></div>
+            <div class="cyber-corner corner-bl"></div>
+            <div class="cyber-corner corner-br"></div>
             
-            <h5>Input Format:</h5>
+            <h3 class="mb-3"><i class="fas fa-terminal me-2"></i>OBJECTIVE: NUM3R1C_FUSION</h3>
+            <p>Create a program that merges two numerical data streams and outputs their combined value to the net.</p>
+            
+            <h5 class="mt-4 mb-2"><i class="fas fa-digital-tachograph me-2"></i>INPUT_STREAM:</h5>
             <p>Two space-separated integers A and B.</p>
             
-            <h5>Output Format:</h5>
+            <h5 class="mt-3 mb-2"><i class="fas fa-broadcast-tower me-2"></i>OUTPUT_STREAM:</h5>
             <p>A single integer representing the sum of A and B.</p>
             
-            <h5>Constraints:</h5>
+            <h5 class="mt-3 mb-2"><i class="fas fa-radiation-alt me-2"></i>SYSTEM_CONSTRAINTS:</h5>
             <ul>
                 <li>-1000 ≤ A, B ≤ 1000</li>
             </ul>
             
-            <h5>Sample Input:</h5>
+            <h5 class="mt-3 mb-2"><i class="fas fa-vials me-2"></i>TEST_INJECTION:</h5>
             <pre>5 7</pre>
             
-            <h5>Sample Output:</h5>
+            <h5 class="mt-3 mb-2"><i class="fas fa-server me-2"></i>EXPECTED_RESPONSE:</h5>
             <pre>12</pre>
             
-            <h5>Allowed Languages:</h5>
+            <h5 class="mt-3 mb-2"><i class="fas fa-code me-2"></i>COMPATIBLE_PROTOCOLS:</h5>
             <ul>
-                <li>C (.c)</li>
-                <li>C++ (.cpp)</li>
-                <li>Java (.java) - Must contain a public class matching the filename</li>
-                <li>Python (.py)</li>
+                <li>C (.c) - Low-level system access</li>
+                <li>C++ (.cpp) - Enhanced memory manipulation</li>
+                <li>Java (.java) - Corporate runtime environment (Must contain a public class matching the filename)</li>
+                <li>Python (.py) - Rapid deployment interface</li>
             </ul>
         </div>
         
         <form id="submission-form">
+            <div class="cyber-corner corner-tl"></div>
+            <div class="cyber-corner corner-tr"></div>
+            <div class="cyber-corner corner-bl"></div>
+            <div class="cyber-corner corner-br"></div>
+            
             <div class="mb-3">
-                <label for="code-file" class="form-label">Upload your solution file:</label>
+                <label for="code-file" class="form-label"><i class="fas fa-upload me-2"></i>INJECT YOUR CODE:</label>
                 <input class="form-control" type="file" id="code-file" accept=".c,.cpp,.java,.py" required>
-                <div class="form-text">Maximum file size: 1MB. Accepted file types: .c, .cpp, .java, .py</div>
+                <div class="form-text">MAX_SIZE: 1MB // PROTOCOLS: .c, .cpp, .java, .py</div>
             </div>
-            <button type="submit" class="btn btn-primary">Submit & Test</button>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-rocket me-2"></i>COMPILE & EXECUTE
+            </button>
         </form>
         
         <div id="loading" class="d-none text-center">
             <div class="loader"></div>
-            <p>Processing your submission...</p>
+            <p>COMPILING NEURAL CODE<span class="blink">...</span></p>
         </div>
         
         <div id="results" class="results d-none">
+            <div class="cyber-corner corner-tl"></div>
+            <div class="cyber-corner corner-tr"></div>
+            <div class="cyber-corner corner-bl"></div>
+            <div class="cyber-corner corner-br"></div>
+            
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3>Test Results</h3>
+                <h3><i class="fas fa-clipboard-check me-2"></i>EXECUTION_RESULTS</h3>
                 <div id="score-display"></div>
             </div>
             <div id="results-container"></div>
@@ -132,6 +586,89 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Matrix rain effect
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Make canvas full screen
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Characters to display
+            const chars = "01αβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const fontSize = 14;
+            const columns = Math.floor(canvas.width / fontSize);
+            
+            // Array to track drop position for each column
+            const drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+
+            // Drawing the matrix rain
+            function drawMatrix() {
+                // Semi-transparent black background to show trail
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Green text color
+                ctx.fillStyle = '#39ff14';
+                ctx.font = fontSize + 'px Courier New';
+                
+                // Loop through each drop
+                for (let i = 0; i < drops.length; i++) {
+                    // Random character
+                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                    
+                    // Draw character
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    // Reset drop when it reaches bottom or randomly
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    
+                    // Move drop
+                    drops[i]++;
+                }
+            }
+            
+            // Initial matrix animation
+            setInterval(drawMatrix, 33);
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                
+                // Recalculate columns
+                const columns = Math.floor(canvas.width / fontSize);
+                
+                // Reset drops
+                for (let i = 0; i < columns; i++) {
+                    drops[i] = 1;
+                }
+            });
+            
+            // Success/failure overlays
+            const successOverlay = document.getElementById('success-overlay');
+            const failureOverlay = document.getElementById('failure-overlay');
+
+            function showSuccessOverlay() {
+                successOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    successOverlay.style.opacity = '0';
+                }, 3000);
+            }
+            
+            function showFailureOverlay() {
+                failureOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    failureOverlay.style.opacity = '0';
+                }, 3000);
+            }
+            
+            // Form submission setup
             const submissionForm = document.getElementById('submission-form');
             const loadingDiv = document.getElementById('loading');
             const resultsDiv = document.getElementById('results');
@@ -175,62 +712,109 @@
                 
                 if (data.error || data.status === 'error') {
                     // Display error message
+                    showFailureOverlay();
+                    
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'alert alert-danger';
-                    errorMsg.innerHTML = '<strong>Error (' + (data.phase || 'unknown') + '):</strong> ' + (data.message || data.error);
+                    errorMsg.style.backgroundColor = 'rgba(255, 42, 109, 0.1)';
+                    errorMsg.style.color = 'var(--fail-color)';
+                    errorMsg.style.border = '1px solid var(--fail-color)';
+                    errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><strong>Error (' + (data.phase || 'unknown') + '):</strong> ' + (data.message || data.error);
                     resultsContainer.appendChild(errorMsg);
                     scoreDisplay.innerHTML = '';
                 } else if (data.results) {
                     // Display score and language info
                     const score = data.score;
                     const language = data.language || "unknown";
-                    const scoreClass = score.percentage === 100 ? 'bg-success' : 
-                                      score.percentage >= 60 ? 'bg-warning' : 'bg-danger';
                     
-                    // Language badge color
+                    // Language badge color mapping
                     const languageColors = {
-                        'c': 'bg-secondary',
-                        'cpp': 'bg-primary',
-                        'java': 'bg-danger',
-                        'python': 'bg-success'
+                        'c': 'var(--neon-blue)',
+                        'cpp': 'var(--neon-purple)',
+                        'java': 'var(--neon-pink)',
+                        'python': 'var(--neon-yellow)',
+                        'py': 'var(--neon-yellow)'
                     };
                     
+                    let scoreColor, scoreClass;
+                    if (score.percentage === 100) {
+                        scoreColor = 'var(--success-color)';
+                        scoreClass = '';
+                        showSuccessOverlay();
+                    } else if (score.percentage >= 60) {
+                        scoreColor = 'var(--neon-yellow)';
+                        scoreClass = 'warning';
+                        showFailureOverlay();
+                    } else {
+                        scoreColor = 'var(--fail-color)';
+                        scoreClass = 'danger';
+                        showFailureOverlay();
+                    }
+                    
+                    const langColor = languageColors[language] || 'var(--neon-blue)';
+                    
                     scoreDisplay.innerHTML = `
-                        <div>
-                            <span class="badge ${languageColors[language] || 'bg-secondary'} me-2">
+                        <div class="d-flex align-items-center">
+                            <span class="language-badge me-2" style="color: ${langColor}; border: 1px solid ${langColor};">
                                 ${language.toUpperCase()}
                             </span>
-                            <span class="badge ${scoreClass} score-badge">
-                                ${score.passed}/${score.total} tests passed (${score.percentage}%)
+                            <span class="score-badge" style="color: ${scoreColor}; border-color: ${scoreColor};">
+                                <span class="digital-counter">${score.passed}</span>/<span class="digital-counter">${score.total}</span> 
+                                TESTS PASSED [<span class="digital-counter">${score.percentage}</span>%]
                             </span>
                         </div>
                     `;
                     
                     // Display individual test cases
-                    data.results.forEach((result) => {
+                    data.results.forEach((result, index) => {
                         const testCase = document.createElement('div');
-                        testCase.className = 'test-case ' + (result.passed ? 'pass' : 'fail');
+                        testCase.className = 'test-case' + (result.passed ? 'pass' : 'fail');
+                        testCase.style.opacity = '0';
+                        testCase.style.transform = 'translateY(20px)';
                         
                         testCase.innerHTML = `
-                            <h5>Test Case ${result.id}: ${result.passed ? 'Passed' : 'Failed'}</h5>
+                            <div class="cyber-corner corner-tl"></div>
+                            <div class="cyber-corner corner-tr"></div>
+                            <div class="cyber-corner corner-bl"></div>
+                            <div class="cyber-corner corner-br"></div>
+                            
+                            <h5><i class="fas ${result.passed ? 'fa-check-circle' : 'fa-times-circle'} me-2"></i>
+                            TEST_VECTOR_<span class="digital-counter">${result.id}</span>: 
+                            ${result.passed ? '<span style="color: var(--success-color)">ACCESS_GRANTED</span>' : 
+                                            '<span style="color: var(--fail-color)">ACCESS_DENIED</span>'}
+                            </h5>
+                            
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <strong>Input:</strong>
+                                    <strong><i class="fas fa-arrow-right me-1"></i>INPUT:</strong>
                                     <pre>${result.input}</pre>
                                 </div>
                                 <div class="col-md-4">
-                                    <strong>Expected Output:</strong>
+                                    <strong><i class="fas fa-bullseye me-1"></i>EXPECTED:</strong>
                                     <pre>${result.expected}</pre>
                                 </div>
                                 <div class="col-md-4">
-                                    <strong>Your Output:</strong>
-                                    <pre>${result.actual || 'No output'}</pre>
+                                    <strong><i class="fas fa-terminal me-1"></i>OUTPUT:</strong>
+                                    <pre>${result.actual || 'NO_OUTPUT_DETECTED'}</pre>
                                 </div>
                             </div>
-                            <div><small>Execution time: ${result.execution_time} ms</small></div>
+                            
+                            <div class="mt-2">
+                                <small>
+                                    <i class="fas fa-clock me-1"></i>EXECUTION_TIME: 
+                                    <span class="digital-counter">${result.execution_time}</span> ms
+                                </small>
+                            </div>
                         `;
                         
                         resultsContainer.appendChild(testCase);
+                        
+                        // Animate the test case appearing
+                        setTimeout(() => {
+                            testCase.style.transition = 'all 0.3s ease';
+                            testCase.style.opacity = '1';
+                            testCase.style.transform = 'translateY(0)';
+                        }, 200 * index);
                     });
                 }
                 
