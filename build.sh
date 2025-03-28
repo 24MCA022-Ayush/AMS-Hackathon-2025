@@ -4,6 +4,11 @@
 # Exit on error
 set -o errexit
 
+# Update package lists and install OpenJDK 17 (or another version you prefer)
+echo "Installing Java..."
+apt-get update
+apt-get install -y openjdk-17-jdk
+
 # Install Python dependencies
 pip install -r requirements.txt
 
@@ -29,7 +34,7 @@ cat > config/java_paths.json << EOL
 }
 EOL
 
-# Try to find alternative Java paths
+# Try to find alternative Java paths (as fallback, though which should work now)
 echo "Looking for alternative Java paths..."
 find / -name "java" -type f -executable 2>/dev/null | grep -v "tmp" > config/alt_java_paths.txt
 find / -name "javac" -type f -executable 2>/dev/null | grep -v "tmp" > config/alt_javac_paths.txt
@@ -67,11 +72,11 @@ if [ ! -f "test_cases/test_cases.json" ]; then
 EOL
 fi
 
-# Create necessary directories
+# Create necessary directories (already present, but good to keep for clarity)
 mkdir -p uploads
 mkdir -p test_cases
 
-# Create test cases file if it doesn't exist
+# Create test cases file if it doesn't exist (already present, but good to keep for clarity)
 if [ ! -f "test_cases/test_cases.json" ]; then
   cat > test_cases/test_cases.json << 'EOL'
 [
@@ -104,5 +109,5 @@ if [ ! -f "test_cases/test_cases.json" ]; then
 EOL
 fi
 
-# Create templates directory and index.html
+# Create templates directory and index.html (already present, but good to keep for clarity)
 mkdir -p templates
