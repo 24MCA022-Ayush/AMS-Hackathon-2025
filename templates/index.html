@@ -15,9 +15,9 @@
             --neon-blue: #05d9e8;
             --neon-purple: #d442fe;
             --neon-yellow: #ffd319;
-            --dark-bg: #0c0c14;
-            --darker-bg: #05050a;
-            --card-bg: #141428;
+            --dark-bg: #080810;
+            --darker-bg: #050508;
+            --card-bg: #101020;
             --success-color: #00ff9f;
             --fail-color: #ff2a6d;
         }
@@ -37,6 +37,7 @@
             overflow-x: hidden;
         }
         
+        /* Grid background */
         body::before {
             content: "";
             position: fixed;
@@ -49,7 +50,7 @@
                 linear-gradient(90deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent);
             background-size: 50px 50px;
             pointer-events: none;
-            z-index: 1;
+            z-index: -1;
         }
         
         .glitch {
@@ -129,6 +130,7 @@
             margin-top: 30px;
         }
         
+        /* Card styling */
         .test-case {
             margin-bottom: 15px;
             padding: 15px;
@@ -244,6 +246,22 @@
             color: var(--neon-blue);
             position: relative;
             overflow: hidden;
+        }
+        
+        pre::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background-color: var(--neon-blue);
+            animation: cursor-blink 1s steps(2) infinite;
+        }
+        
+        @keyframes cursor-blink {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
         
         .loader {
@@ -369,14 +387,42 @@
             font-size: 0.8rem;
         }
         
-        /* Matrix canvas */
-        #matrix-canvas {
+        /* Floating particle animation */
+        .particle-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: var(--neon-blue);
+            opacity: 0.6;
+            border-radius: 50%;
+            animation: float-particle linear infinite;
+        }
+        
+        @keyframes float-particle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
         }
         
         /* Scanlines effect */
@@ -394,7 +440,7 @@
             background-size: 100% 4px;
             z-index: 999;
             pointer-events: none;
-            opacity: 0.2;
+            opacity: 0.1;
         }
         
         /* Success/Failure overlays */
@@ -487,8 +533,8 @@
     </style>
 </head>
 <body>
-    <!-- Matrix canvas -->
-    <canvas id="matrix-canvas"></canvas>
+    <!-- Floating particles animation -->
+    <div class="particle-container" id="particle-container"></div>
     <div class="scanlines"></div>
     
     <!-- Success/Failure overlays -->
@@ -505,8 +551,8 @@
     
     <div class="header">
         <div class="container">
-            <h1 class="glitch"><i class="fas fa-microchip me-2"></i>AMS HACKATHON CODE SUBMISSION</h1>
-            <p class="lead mb-0">Submit your code and see instant test results <span class="blink">_</span></p>
+            <h1 class="glitch"><i class="fas fa-microchip me-2"></i>AMS Hackathon 2025</h1>
+            <p class="lead mb-0">COME & PROVE YOUR SKILLS!!<span class="blink">_</span></p>
         </div>
     </div>
 
@@ -568,11 +614,6 @@
         </div>
         
         <div id="results" class="results d-none">
-            <div class="cyber-corner corner-tl"></div>
-            <div class="cyber-corner corner-tr"></div>
-            <div class="cyber-corner corner-bl"></div>
-            <div class="cyber-corner corner-br"></div>
-            
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3><i class="fas fa-clipboard-check me-2"></i>EXECUTION_RESULTS</h3>
                 <div id="score-display"></div>
@@ -586,69 +627,41 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Matrix rain effect
-            const canvas = document.getElementById('matrix-canvas');
-            const ctx = canvas.getContext('2d');
-
-            // Make canvas full screen
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            // Characters to display
-            const chars = "01αβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            const fontSize = 14;
-            const columns = Math.floor(canvas.width / fontSize);
+            // Create floating particles
+            const particleContainer = document.getElementById('particle-container');
+            const particleCount = 50;
             
-            // Array to track drop position for each column
-            const drops = [];
-            for (let i = 0; i < columns; i++) {
-                drops[i] = 1;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                particle.style.left = '${posX}px';
+                particle.style.top = '${posY}px';
+                
+                // Random size
+                const size = Math.random() * 3 + 1;
+                particle.style.width = '${size}px';
+                particle.style.height = '${size}px';
+                
+                // Random color
+                const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--success-color)'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = color;
+                particle.style.boxShadow = '0 0 5px ${color}';
+                
+                // Random animation duration
+                const duration = Math.random() * 15 + 10;
+                particle.style.animationDuration = '${duration}s';
+                
+                // Random delay
+                const delay = Math.random() * 10;
+                particle.style.animationDelay = '${delay}s';
+                
+                particleContainer.appendChild(particle);
             }
-
-            // Drawing the matrix rain
-            function drawMatrix() {
-                // Semi-transparent black background to show trail
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Green text color
-                ctx.fillStyle = '#39ff14';
-                ctx.font = fontSize + 'px Courier New';
-                
-                // Loop through each drop
-                for (let i = 0; i < drops.length; i++) {
-                    // Random character
-                    const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                    
-                    // Draw character
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                    
-                    // Reset drop when it reaches bottom or randomly
-                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                        drops[i] = 0;
-                    }
-                    
-                    // Move drop
-                    drops[i]++;
-                }
-            }
-            
-            // Initial matrix animation
-            setInterval(drawMatrix, 33);
-            
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                
-                // Recalculate columns
-                const columns = Math.floor(canvas.width / fontSize);
-                
-                // Reset drops
-                for (let i = 0; i < columns; i++) {
-                    drops[i] = 1;
-                }
-            });
             
             // Success/failure overlays
             const successOverlay = document.getElementById('success-overlay');
@@ -768,7 +781,7 @@
                     // Display individual test cases
                     data.results.forEach((result, index) => {
                         const testCase = document.createElement('div');
-                        testCase.className = 'test-case' + (result.passed ? 'pass' : 'fail');
+                        testCase.className = 'test-case ' + (result.passed ? 'pass' : 'fail');
                         testCase.style.opacity = '0';
                         testCase.style.transform = 'translateY(20px)';
                         
