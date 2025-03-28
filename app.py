@@ -13,6 +13,50 @@ app = Flask(__name__, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
+app.config['CONFIG_FOLDER'] = 'config'
+
+# Load Java paths if they exist
+java_path = 'java'  # Default fallback
+javac_path = 'javac'  # Default fallback
+
+java_config_file = os.path.join(app.config['CONFIG_FOLDER'], 'java_paths.json')
+if os.path.exists(java_config_file):
+    try:
+        with open(java_config_file, 'r') as f:
+            java_config = json.load(f)
+            if java_config.get('java_path'):
+                java_path = java_config['java_path']
+            if java_config.get('javac_path'):
+                javac_path = java_config['javac_path']
+        print(f"Using Java paths: java={java_path}, javac={javac_path}")
+    except Exception as e:
+        print(f"Error loading Java paths: {e}")
+
+# If paths are empty, try to find them from alternative paths
+if not java_path or not javac_path:
+    alt_java_paths_file = os.path.join(app.config['CONFIG_FOLDER'], 'alt_java_paths.txt')
+    alt_javac_paths_file = os.path.join(app.config['CONFIG_FOLDER'], 'alt_javac_paths.txt')
+    
+    if os.path.exists(alt_java_paths_file):
+        try:
+            with open(alt_java_paths_file, 'r') as f:
+                paths = f.readlines()
+                if paths:
+                    java_path = paths[0].strip()
+                    print(f"Using alternative Java path: {java_path}")
+        except Exception as e:
+            print(f"Error loading alternative Java paths: {e}")
+    
+    if os.path.exists(alt_javac_paths_file):
+        try:
+            with open(alt_javac_paths_file, 'r') as f:
+                paths = f.readlines()
+                if paths:
+                    javac_path = paths[0].strip()
+                    print(f"Using alternative JavaC path: {javac_path}")
+        except Exception as e:
+            print(f"Error loading alternative JavaC paths: {e}")
+
 app.config['SUPPORTED_LANGUAGES'] = {
     'cpp': {
         'file_ext': '.cpp',
@@ -28,8 +72,8 @@ app.config['SUPPORTED_LANGUAGES'] = {
     },
     'java': {
         'file_ext': '.java',
-        'compile_cmd': ['javac', '{source_file}'],
-        'run_cmd': ['java', '-classpath', '{dir}', '{classname}'],
+        'compile_cmd': [javac_path, '{source_file}'],
+        'run_cmd': [java_path, '-classpath', '{dir}', '{classname}'],
         'timeout': 8
     },
     'python': {
@@ -121,6 +165,14 @@ def submit_code():
             # Special handling for Java
             classname = None
             if language == 'java':
+                # Check if Java is available
+                if not os.path.exists(javac_path) and javac_path == 'javac':
+                    return jsonify({
+                        "status": "error",
+                        "phase": "environment",
+                        "message": "Java compiler (javac) is not available on this server. Please use C, C++, or Python instead."
+                    })
+                
                 # Extract class name from Java file
                 with open(file_path, 'r') as f:
                     content = f.read()
@@ -147,17 +199,29 @@ def submit_code():
                     dir=temp_dir,
                     classname=classname) for cmd in language_config['compile_cmd']]
                 
-                compile_result = subprocess.run(
-                    compile_cmd,
-                    capture_output=True,
-                    timeout=30
-                )
-                
-                if compile_result.returncode != 0:
+                print(f"Compiling with command: {compile_cmd}")
+                try:
+                    compile_result = subprocess.run(
+                        compile_cmd,
+                        capture_output=True,
+                        timeout=30
+                    )
+                    
+                    if compile_result.returncode != 0:
+                        error_msg = compile_result.stderr.decode()
+                        print(f"Compilation error: {error_msg}")
+                        return jsonify({
+                            "status": "error",
+                            "phase": "compilation",
+                            "message": error_msg
+                        })
+                except FileNotFoundError as e:
+                    print(f"Compiler not found: {e}")
+                    compiler_name = language_config['compile_cmd'][0].split('/')[-1]
                     return jsonify({
                         "status": "error",
-                        "phase": "compilation",
-                        "message": compile_result.stderr.decode()
+                        "phase": "environment",
+                        "message": f"Compiler '{compiler_name}' not found. Please contact the administrator."
                     })
             
             # Run the tests
