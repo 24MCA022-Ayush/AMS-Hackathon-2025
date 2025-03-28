@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o errexit
+
 
 echo "Installing Java (self-contained)..."
 
