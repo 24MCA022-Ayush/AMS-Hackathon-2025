@@ -5,7 +5,7 @@ set -o errexit
 
 echo "Installing Java (self-contained)..."
 
-JDK_URL="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.14%2B7/OpenJDK17U-debugimage_aarch64_linux_hotspot_17.0.14_7.tar.gz" # VERIFY URL IS STILL CORRECT!
+JDK_URL="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.14%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.14_7.tar.gz" # VERIFY URL IS STILL CORRECT!
 JDK_DIR="vendor/java"
 MAX_RETRIES=3
 RETRY_DELAY=5  # seconds
