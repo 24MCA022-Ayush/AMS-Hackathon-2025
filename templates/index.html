@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Code Submission</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+    <style>
+        body {
+            padding-bottom: 50px;
+        }
+        .container {
+            max-width: 900px;
+        }
+        .header {
+            background-color: #563d7c;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .test-case {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .pass {
+            background-color: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+        .fail {
+            background-color: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+        .score-badge {
+            font-size: 1.1rem;
+            padding: 8px 16px;
+        }
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        pre {
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #563d7c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Hackathon Code Submission System</h1>
+            <p class="lead mb-0">Submit your C++ solutions and see instant test results</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="instructions">
+            <h3>Problem Statement: Sum of Two Numbers</h3>
+            <p>Write a C++ program that reads two integers from standard input and outputs their sum to standard output.</p>
+            
+            <h5>Input Format:</h5>
+            <p>Two space-separated integers A and B.</p>
+            
+            <h5>Output Format:</h5>
+            <p>A single integer representing the sum of A and B.</p>
+            
+            <h5>Constraints:</h5>
+            <ul>
+                <li>-1000 ≤ A, B ≤ 1000</li>
+            </ul>
+            
+            <h5>Sample Input:</h5>
+            <pre>5 7</pre>
+            
+            <h5>Sample Output:</h5>
+            <pre>12</pre>
+        </div>
+        
+        <form id="submission-form">
+            <div class="mb-3">
+                <label for="code-file" class="form-label">Upload your C++ solution file:</label>
+                <input class="form-control" type="file" id="code-file" accept=".cpp" required>
+                <div class="form-text">Maximum file size: 1MB</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit & Test</button>
+        </form>
+        
+        <div id="loading" class="d-none text-center">
+            <div class="loader"></div>
+            <p>Processing your submission...</p>
+        </div>
+        
+        <div id="results" class="results d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Test Results</h3>
+                <div id="score-display"></div>
+            </div>
+            <div id="results-container"></div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/languages/cpp.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const submissionForm = document.getElementById('submission-form');
+            const loadingDiv = document.getElementById('loading');
+            const resultsDiv = document.getElementById('results');
+            const resultsContainer = document.getElementById('results-container');
+            const scoreDisplay = document.getElementById('score-display');
+            
+            submissionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const fileInput = document.getElementById('code-file');
+                if (!fileInput.files[0]) {
+                    alert('Please select a file to upload');
+                    return;
+                }
+                
+                // Show loading, hide results
+                loadingDiv.classList.remove('d-none');
+                resultsDiv.classList.add('d-none');
+                
+                const formData = new FormData();
+                formData.append('code', fileInput.files[0]);
+                
+                try {
+                    const response = await fetch('/api/submit', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    displayResults(data);
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting your code');
+                } finally {
+                    loadingDiv.classList.add('d-none');
+                }
+            });
+            
+            function displayResults(data) {
+                resultsContainer.innerHTML = '';
+                
+                if (data.error || data.status === 'error') {
+                    // Display error message
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'alert alert-danger';
+                    errorMsg.innerHTML = `<strong>Error (${data.phase || 'unknown'}):</strong> ${data.message || data.error}`;
+                    resultsContainer.appendChild(errorMsg);
+                    scoreDisplay.innerHTML = '';
+                } else if (data.results) {
+                    // Display score
+                    const score = data.score;
+                    const scoreClass = score.percentage === 100 ? 'bg-success' : 
+                                      score.percentage >= 60 ? 'bg-warning' : 'bg-danger';
+                    
+                    scoreDisplay.innerHTML = `
+                        <span class="badge ${scoreClass} score-badge">
+                            ${score.passed}/${score.total} tests passed (${score.percentage}%)
+                        </span>
+                    `;
+                    
+                    // Display individual test cases
+                    data.results.forEach((result) => {
+                        const testCase = document.createElement('div');
+                        testCase.className = `test-case ${result.passed ? 'pass' : 'fail'}`;
+                        
+                        testCase.innerHTML = `
+                            <h5>Test Case ${result.id}: ${result.passed ? 'Passed' : 'Failed'}</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <strong>Input:</strong>
+                                    <pre>${result.input}</pre>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Expected Output:</strong>
+                                    <pre>${result.expected}</pre>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Your Output:</strong>
+                                    <pre>${result.actual || 'No output'}</pre>
+                                </div>
+                            </div>
+                            <div><small>Execution time: ${result.execution_time} ms</small></div>
+                        `;
+                        
+                        resultsContainer.appendChild(testCase);
+                    });
+                }
+                
+                resultsDiv.classList.remove('d-none');
+            }
+        });
+    </script>
+</body>
+</html>
