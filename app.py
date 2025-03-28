@@ -5,13 +5,40 @@ import tempfile
 import uuid
 import json
 import time
+import re
 from werkzeug.utils import secure_filename
 import shutil
 
-app = Flask(__name__, static_folder='static')
+app = Flask(_name_, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
+app.config['SUPPORTED_LANGUAGES'] = {
+    'cpp': {
+        'file_ext': '.cpp',
+        'compile_cmd': ['g++', '-std=c++17', '{source_file}', '-o', '{exe_file}'],
+        'run_cmd': ['{exe_file}'],
+        'timeout': 5
+    },
+    'c': {
+        'file_ext': '.c',
+        'compile_cmd': ['gcc', '{source_file}', '-o', '{exe_file}'],
+        'run_cmd': ['{exe_file}'],
+        'timeout': 5
+    },
+    'java': {
+        'file_ext': '.java',
+        'compile_cmd': ['javac', '{source_file}'],
+        'run_cmd': ['java', '-classpath', '{dir}', '{classname}'],
+        'timeout': 8
+    },
+    'python': {
+        'file_ext': '.py',
+        'compile_cmd': None,  # Python doesn't need compilation
+        'run_cmd': ['python3', '{source_file}'],
+        'timeout': 6
+    }
+}
 
 # Ensure upload and test case directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -70,12 +97,58 @@ def submit_code():
         file_path = os.path.join(temp_dir, filename)
         code_file.save(file_path)
         
-        # Handle C++ files
-        if filename.endswith('.cpp'):
-            # Compile the code
-            try:
+        # Detect the programming language from file extension
+        file_ext = os.path.splitext(filename)[1].lower()
+        language = None
+        
+        for lang, config in app.config['SUPPORTED_LANGUAGES'].items():
+            if file_ext == config['file_ext']:
+                language = lang
+                break
+        
+        if language is None:
+            return jsonify({
+                "status": "error",
+                "phase": "validation",
+                "message": f"Unsupported file type: {file_ext}. Please upload a .c, .cpp, .java, or .py file."
+            })
+        
+        # Handle the code based on the detected language
+        try:
+            language_config = app.config['SUPPORTED_LANGUAGES'][language]
+            exe_file = f"{temp_dir}/solution"
+            
+            # Special handling for Java
+            classname = None
+            if language == 'java':
+                # Extract class name from Java file
+                with open(file_path, 'r') as f:
+                    content = f.read()
+                    match = re.search(r'public\s+class\s+(\w+)', content)
+                    if match:
+                        classname = match.group(1)
+                    else:
+                        return jsonify({
+                            "status": "error",
+                            "phase": "validation",
+                            "message": "Could not find a public class in your Java file."
+                        })
+                # Make sure the filename matches the class name
+                if classname + '.java' != filename:
+                    new_file_path = os.path.join(temp_dir, f"{classname}.java")
+                    os.rename(file_path, new_file_path)
+                    file_path = new_file_path
+            
+            # Compile the code if needed
+            if language_config['compile_cmd'] is not None:
+                compile_cmd = [cmd.format(
+                    source_file=file_path, 
+                    exe_file=exe_file, 
+                    dir=temp_dir,
+                    classname=classname) for cmd in language_config['compile_cmd']]
+                
                 compile_result = subprocess.run(
-                    ["g++", "-std=c++17", file_path, "-o", f"{temp_dir}/solution"],
+                    compile_cmd,
                     capture_output=True,
                     timeout=30
                 )
@@ -86,48 +159,50 @@ def submit_code():
                         "phase": "compilation",
                         "message": compile_result.stderr.decode()
                     })
-                
-                # Run the tests
-                results = []
-                test_cases = get_test_cases()
-                
-                for test_case in test_cases:
-                    result = run_test_case(f"{temp_dir}/solution", test_case)
-                    results.append(result)
-                
-                # Calculate score
-                passed = sum(1 for r in results if r["passed"])
-                total = len(results)
-                
-                return jsonify({
-                    "status": "success",
-                    "submission_id": submission_id,
-                    "results": results,
-                    "score": {
-                        "passed": passed,
-                        "total": total,
-                        "percentage": round((passed / total) * 100, 2)
-                    }
-                })
             
-            except subprocess.TimeoutExpired:
-                return jsonify({
-                    "status": "error",
-                    "phase": "compilation",
-                    "message": "Compilation timed out after 30 seconds"
-                })
+            # Run the tests
+            results = []
+            test_cases = get_test_cases()
             
-            except Exception as e:
-                return jsonify({
-                    "status": "error",
-                    "phase": "process",
-                    "message": str(e)
-                })
-        else:
+            for test_case in test_cases:
+                # Prepare the run command
+                run_cmd = [cmd.format(
+                    source_file=file_path, 
+                    exe_file=exe_file, 
+                    dir=temp_dir,
+                    classname=classname) for cmd in language_config['run_cmd']]
+                
+                result = run_test_case(run_cmd, test_case, language_config['timeout'])
+                results.append(result)
+            
+            # Calculate score
+            passed = sum(1 for r in results if r["passed"])
+            total = len(results)
+            
+            return jsonify({
+                "status": "success",
+                "submission_id": submission_id,
+                "language": language,
+                "results": results,
+                "score": {
+                    "passed": passed,
+                    "total": total,
+                    "percentage": round((passed / total) * 100, 2)
+                }
+            })
+        
+        except subprocess.TimeoutExpired:
             return jsonify({
                 "status": "error",
-                "phase": "validation",
-                "message": "Unsupported file type. Please upload a .cpp file."
+                "phase": "compilation",
+                "message": "Compilation timed out after 30 seconds"
+            })
+        
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "phase": "process",
+                "message": str(e)
             })
             
     finally:
@@ -140,23 +215,27 @@ def submit_code():
         # For simplicity, we're just scheduling deletion after a delay
         # This won't work properly on Render, so you'd need to implement proper cleanup
 
-def run_test_case(executable_path, test_case):
+def run_test_case(run_cmd, test_case, timeout_seconds):
     try:
         # Run with input from test case
         start_time = time.time()
         process = subprocess.run(
-            [executable_path],
+            run_cmd,
             input=test_case["input"],
             text=True,
             capture_output=True,
-            timeout=5  # 5 second timeout
+            timeout=timeout_seconds
         )
         execution_time = time.time() - start_time
         
         # Check if output matches expected
         actual_output = process.stdout
         expected_output = test_case["expected_output"]
-        passed = actual_output == expected_output
+        
+        # Normalize line endings and whitespace for comparison
+        actual_normalized = actual_output.strip().replace('\r\n', '\n')
+        expected_normalized = expected_output.strip().replace('\r\n', '\n')
+        passed = actual_normalized == expected_normalized
         
         return {
             "id": test_case["id"],
@@ -172,8 +251,8 @@ def run_test_case(executable_path, test_case):
             "passed": False,
             "input": test_case["input"].strip(),
             "expected": test_case["expected_output"].strip(),
-            "actual": "Time limit exceeded (5 seconds)",
-            "execution_time": 5000  # 5000 ms
+            "actual": f"Time limit exceeded ({timeout_seconds} seconds)",
+            "execution_time": timeout_seconds * 1000  # Convert to ms
         }
     except Exception as e:
         return {
@@ -185,5 +264,5 @@ def run_test_case(executable_path, test_case):
             "execution_time": 0
         }
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

@@ -76,7 +76,7 @@
     <div class="container">
         <div class="instructions">
             <h3>Problem Statement: Sum of Two Numbers</h3>
-            <p>Write a C++ program that reads two integers from standard input and outputs their sum to standard output.</p>
+            <p>Write a program that reads two integers from standard input and outputs their sum to standard output.</p>
             
             <h5>Input Format:</h5>
             <p>Two space-separated integers A and B.</p>
@@ -94,13 +94,21 @@
             
             <h5>Sample Output:</h5>
             <pre>12</pre>
+            
+            <h5>Allowed Languages:</h5>
+            <ul>
+                <li>C (.c)</li>
+                <li>C++ (.cpp)</li>
+                <li>Java (.java) - Must contain a public class matching the filename</li>
+                <li>Python (.py)</li>
+            </ul>
         </div>
         
         <form id="submission-form">
             <div class="mb-3">
-                <label for="code-file" class="form-label">Upload your C++ solution file:</label>
-                <input class="form-control" type="file" id="code-file" accept=".cpp" required>
-                <div class="form-text">Maximum file size: 1MB</div>
+                <label for="code-file" class="form-label">Upload your solution file:</label>
+                <input class="form-control" type="file" id="code-file" accept=".c,.cpp,.java,.py" required>
+                <div class="form-text">Maximum file size: 1MB. Accepted file types: .c, .cpp, .java, .py</div>
             </div>
             <button type="submit" class="btn btn-primary">Submit & Test</button>
         </form>
@@ -169,25 +177,39 @@
                     // Display error message
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'alert alert-danger';
-                    errorMsg.innerHTML = `<strong>Error (${data.phase || 'unknown'}):</strong> ${data.message || data.error}`;
+                    errorMsg.innerHTML = <strong>Error (${data.phase || 'unknown'}):</strong> ${data.message || data.error};
                     resultsContainer.appendChild(errorMsg);
                     scoreDisplay.innerHTML = '';
                 } else if (data.results) {
-                    // Display score
+                    // Display score and language info
                     const score = data.score;
+                    const language = data.language || "unknown";
                     const scoreClass = score.percentage === 100 ? 'bg-success' : 
                                       score.percentage >= 60 ? 'bg-warning' : 'bg-danger';
                     
+                    // Language badge color
+                    const languageColors = {
+                        'c': 'bg-secondary',
+                        'cpp': 'bg-primary',
+                        'java': 'bg-danger',
+                        'python': 'bg-success'
+                    };
+                    
                     scoreDisplay.innerHTML = `
-                        <span class="badge ${scoreClass} score-badge">
-                            ${score.passed}/${score.total} tests passed (${score.percentage}%)
-                        </span>
+                        <div>
+                            <span class="badge ${languageColors[language] || 'bg-secondary'} me-2">
+                                ${language.toUpperCase()}
+                            </span>
+                            <span class="badge ${scoreClass} score-badge">
+                                ${score.passed}/${score.total} tests passed (${score.percentage}%)
+                            </span>
+                        </div>
                     `;
                     
                     // Display individual test cases
                     data.results.forEach((result) => {
                         const testCase = document.createElement('div');
-                        testCase.className = `test-case ${result.passed ? 'pass' : 'fail'}`;
+                        testCase.className = test-case ${result.passed ? 'pass' : 'fail'};
                         
                         testCase.innerHTML = `
                             <h5>Test Case ${result.id}: ${result.passed ? 'Passed' : 'Failed'}</h5>
