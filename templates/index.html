@@ -638,27 +638,27 @@
                 // Random position
                 const posX = Math.random() * window.innerWidth;
                 const posY = Math.random() * window.innerHeight;
-                particle.style.left = '${posX}px';
-                particle.style.top = '${posY}px';
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
                 
                 // Random size
-                const size = Math.random() * 3 + 1;
-                particle.style.width = '${size}px';
-                particle.style.height = '${size}px';
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
                 
                 // Random color
                 const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--success-color)'];
                 const color = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.backgroundColor = color;
-                particle.style.boxShadow = '0 0 5px ${color}';
+                particle.style.boxShadow = `0 0 8px ${color}`;
                 
                 // Random animation duration
                 const duration = Math.random() * 15 + 10;
-                particle.style.animationDuration = '${duration}s';
+                particle.style.animationDuration = `${duration}s`;
                 
                 // Random delay
                 const delay = Math.random() * 10;
-                particle.style.animationDelay = '${delay}s';
+                particle.style.animationDelay = `${delay}s`;
                 
                 particleContainer.appendChild(particle);
             }
