@@ -1,21 +1,43 @@
 #!/usr/bin/env bash
 
-
+# Exit on error after setup (but allow download retries)
+set -o errexit
 
 echo "Installing Java (self-contained)..."
 
-# Define JDK download URL (Adoptium Temurin 17 Linux x64, replace with latest if needed)
-JDK_URL="https://download.adoptium.net/temurin17/releases/latest/jdk-17.0.10+7/temurin17-jdk-linux-x64.tar.gz"
-JDK_DIR="vendor/java"  # Directory to extract JDK to
+JDK_URL="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.6%2B7/OpenJDK21U-debugimage_aarch64_alpine-linux_hotspot_21.0.6_7.tar.gz" # VERIFY URL IS STILL CORRECT!
+JDK_DIR="vendor/java"
+MAX_RETRIES=3
+RETRY_DELAY=5  # seconds
 
-mkdir -p vendor  # Create vendor directory if it doesn't exist
+mkdir -p vendor
 mkdir -p "$JDK_DIR"
 
-wget -q "$JDK_URL" -O jdk.tar.gz  # Download JDK silently
-tar -xzf jdk.tar.gz -C "$JDK_DIR" --strip-components=1 # Extract to vendor/java, remove top level dir
-rm jdk.tar.gz # Clean up the downloaded archive
+download_jdk() {
+  local retry_count=0
+  while [ $retry_count -lt $MAX_RETRIES ]; do
+    echo "Attempting JDK download (attempt $((retry_count + 1)) of $MAX_RETRIES)..."
+    wget -q "$JDK_URL" -O jdk.tar.gz && return 0  # Download and exit function on success
+    retry_count=$((retry_count + 1))
+    echo "Download failed. Retrying in $RETRY_DELAY seconds..."
+    sleep "$RETRY_DELAY"
+  done
+  echo "Max download retries exceeded. Aborting build."
+  return 1  # Return non-zero exit code if all retries fail
+}
 
-# Set JAVA_HOME and PATH environment variables
+if ! download_jdk; then
+  exit 1  # Abort build if JDK download fails after retries
+fi
+
+if ! tar -xzf jdk.tar.gz -C "$JDK_DIR" --strip-components=1; then
+  echo "Error extracting JDK archive. Aborting build."
+  rm jdk.tar.gz # Clean up potentially corrupted archive
+  exit 1
+fi
+rm jdk.tar.gz # Clean up archive after successful extraction
+
+# Set JAVA_HOME and PATH
 export JAVA_HOME="$JDK_DIR"
 export PATH="$JAVA_HOME/bin:$PATH"
 
@@ -23,7 +45,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 java -version
 javac -version
 
-# Install Python dependencies (rest of your script is the same from here)
+# Install Python dependencies (rest of your script)
 pip install -r requirements.txt
 
 # Create necessary directories
@@ -32,7 +54,7 @@ mkdir -p test_cases
 mkdir -p templates
 mkdir -p config
 
-# Find Java paths and save them (now using the extracted JDK)
+# Find Java paths and save them
 echo "Checking for Java installation..."
 JAVA_PATH=$(which java 2>/dev/null || echo "")
 JAVAC_PATH=$(which javac 2>/dev/null || echo "")
@@ -48,7 +70,7 @@ cat > config/java_paths.json << EOL
 }
 EOL
 
-# Create test cases file if it doesn't exist (rest of your script is the same from here)
+# Create test cases file if it doesn't exist
 if [ ! -f "test_cases/test_cases.json" ]; then
   cat > test_cases/test_cases.json << 'EOL'
 [
@@ -81,7 +103,7 @@ if [ ! -f "test_cases/test_cases.json" ]; then
 EOL
 fi
 
-# Create necessary directories (again, rest of your script is the same from here, these are likely redundant)
+# Create necessary directories (again, likely redundant but harmless)
 mkdir -p uploads
 mkdir -p test_cases
 
