@@ -9,7 +9,7 @@ import re
 from werkzeug.utils import secure_filename
 import shutil
 
-app = Flask(_name_, static_folder='static')
+app = Flask(__name__, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
@@ -264,5 +264,5 @@ def run_test_case(run_cmd, test_case, timeout_seconds):
             "execution_time": 0
         }
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
