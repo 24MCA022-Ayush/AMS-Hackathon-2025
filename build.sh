@@ -45,6 +45,9 @@ export PATH="$JAVA_HOME/bin:$PATH"
 java -version
 javac -version
 
+echo "Upgrading pip..."
+pip install --upgrade pip  # Upgrade pip to the latest version
+
 # Install Python dependencies (rest of your script)
 pip install -r requirements.txt
 
