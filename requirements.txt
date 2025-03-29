@@ -1,6 +1,6 @@
 # requirements.txt
-Flask==2.3.3
-gunicorn==21.2.0
-Werkzeug==2.3.7
-firebase-admin>=8.0.0
+Flask
+gunicorn
+Werkzeug
+firebase-admin
 Flask-Session
