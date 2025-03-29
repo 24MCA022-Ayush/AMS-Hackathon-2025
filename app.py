@@ -8,6 +8,8 @@ import time
 import re
 from werkzeug.utils import secure_filename
 import shutil
+from flask_session import Session  # Import Flask-Session
+
 
 # --- Firebase Admin SDK ---
 import firebase_admin
@@ -20,6 +22,9 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
 app.config['CONFIG_FOLDER'] = 'config'
+app.config["SESSION_PERMANENT"] = False  # Session cookies are not permanent
+app.config["SESSION_TYPE"] = "filesystem"  # Use filesystem for sessions
+Session(app) # Initialize Flask-Session
 
 # Load Java paths if they exist
 java_path = 'java'  # Default fallback
@@ -135,23 +140,43 @@ firebase_admin.initialize_app(cred, {
 
 # Reference to the node where your challenge data is stored in Firebase
 challenge_data_ref = db.reference('/challengeData') # Assuming your data is under a 'challengeData' node
+users_data_ref = db.reference('/usersData')
 
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST']) # Allow POST for login submission
 def login_page():
-    return render_template('index.html') # Serve login page at root
+    if request.method == 'POST':
+        team_name = request.form.get('team-name')
+        entry_code = request.form.get('entry-code')
+
+        try:
+            user = auth.sign_in_with_email_and_password(f"{team_name}@hackathon.ams", entry_code)
+            session['user_uid'] = user['localId'] # Store user UID in session
+            return redirect(url_for('hackathon_page')) # Redirect to hackathon page on successful login
+        except Exception as e:
+            error_message = str(e)
+            return render_template('index.html', login_error=error_message) # Render login page with error
+    return render_template('index.html', login_error=None) # Serve login page on GET
 
 @app.route('/hackathon')
-def index():
+def hackathon_page():
+    user_uid = session.get('user_uid') # Get user UID from session
+
+    if not user_uid: # Check if user UID is in session
+        return redirect(url_for('login_page')) # Redirect to login if not logged in
+
     try:
-        # Fetch challenge data from Firebase
         challenge_data = challenge_data_ref.get()
         if challenge_data:
-            return render_template('hackathon.html', challenge_data=challenge_data) # Serve hackathon page at /hackathon
+            return render_template('hackathon.html', challenge_data=challenge_data)
         else:
-            return "Error: Challenge data not found in Firebase.", 500 # Handle error if data is not found
+            return "Error: Challenge data not found in Firebase.", 500
     except Exception as e:
-        return f"Error fetching challenge data from Firebase: {e}", 500 # Handle Firebase connection errors
+        return f"Error fetching challenge data from Firebase: {e}", 500
+
+@app.route('/logout') # Optional logout route
+def logout():
+    session.pop('user_uid', None) # Clear user session
+    return redirect(url_for('login_page')) # Redirect to login page after logout
 
 
 @app.route('/static/<path:path>')
