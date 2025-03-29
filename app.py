@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import os
 import subprocess
@@ -13,6 +12,7 @@ import shutil
 # --- Firebase Admin SDK ---
 import firebase_admin
 from firebase_admin import credentials
+from firebase_admin import auth # Import auth
 from firebase_admin import db
 
 app = Flask(__name__, static_folder='static')
@@ -138,12 +138,16 @@ challenge_data_ref = db.reference('/challengeData') # Assuming your data is unde
 
 
 @app.route('/')
+def login_page():
+    return render_template('index.html') # Serve login page at root
+
+@app.route('/hackathon')
 def index():
     try:
         # Fetch challenge data from Firebase
         challenge_data = challenge_data_ref.get()
         if challenge_data:
-            return render_template('index.html', challenge_data=challenge_data)
+            return render_template('hackathon.html', challenge_data=challenge_data) # Serve hackathon page at /hackathon
         else:
             return "Error: Challenge data not found in Firebase.", 500 # Handle error if data is not found
     except Exception as e:
@@ -346,7 +350,7 @@ def run_test_case(run_cmd, test_case, timeout_seconds):
             "id": test_case["id"],
             "passed": passed,
             "input": test_case["input"].strip(),
-            "expected": expected_output.strip(),
+            "expected": test_case["expected_output"].strip(),
             "actual": actual_output.strip(),
             "execution_time": round(execution_time * 1000, 2)  # in milliseconds
         }

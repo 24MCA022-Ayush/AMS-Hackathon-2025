@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hackathon Code Submission</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-purple: #d442fe;
+            --neon-yellow: #ffd319;
+            --dark-bg: #080810;
+            --darker-bg: #050508;
+            --card-bg: #101020;
+            --success-color: #00ff9f;
+            --fail-color: #ff2a6d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #dedede;
+            font-family: 'Rajdhani', sans-serif;
+            padding-bottom: 50px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(0deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent),
+                linear-gradient(90deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glitch {
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            14% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            15% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            49% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            50% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            99% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            100% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+        }
+
+        .container {
+            max-width: 900px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            background-color: var(--darker-bg);
+            color: var(--neon-blue);
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--neon-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+            animation: border-flow 3s linear infinite;
+        }
+
+        @keyframes border-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-blue);
+            filter: blur(4px);
+        }
+
+        h1, h3, h5 {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .blink {
+            animation: blink 1.5s steps(2) infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        /* Card styling */
+        .test-case {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 0;
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .test-case:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 217, 232, 0.2);
+        }
+
+        .pass {
+            border-left: 5px solid var(--success-color);
+        }
+
+        .fail {
+            border-left: 5px solid var(--fail-color);
+        }
+
+        .pass::after, .fail::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background-color: var(--card-bg);
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
+        }
+
+        .pass::after {
+            background-color: var(--success-color);
+        }
+
+        .fail::after {
+            background-color: var(--fail-color);
+        }
+
+        .score-badge {
+            font-size: 1rem;
+            padding: 8px 16px;
+            background-color: var(--card-bg);
+            border: 1px solid;
+            border-radius: 0;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-badge::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .instructions {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 0;
+            margin-bottom: 20px;
+            border: 1px solid var(--neon-purple);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instructions::before {
+            content: "<<MISSION_BRIEFING>>";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--dark-bg);
+            padding: 0 10px;
+            color: var(--neon-purple);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .instructions::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--neon-purple) 0%, transparent 70%);
+            opacity: 0.1;
+            border-radius: 50%;
+        }
+
+        pre {
+            border-radius: 0;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        pre::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background-color: var(--neon-blue);
+            animation: cursor-blink 1s steps(2) infinite;
+        }
+
+        @keyframes cursor-blink {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .loader::before, .loader::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--neon-pink);
+        }
+
+        .loader::before {
+            z-index: 100;
+            animation: spin 1s infinite;
+        }
+
+        .loader::after {
+            border: 3px solid var(--neon-blue);
+            opacity: 0.2;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-control, .btn {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0;
+            color: #dedede;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .form-control:focus {
+            background-color: rgba(20, 20, 40, 0.8);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 0.25rem rgba(5, 217, 232, 0.25);
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            transition: all 0.3s;
+            z-index: -1;
+        }
+
+        .btn-primary:hover::before {
+            left: 0;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(212, 66, 254, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .form-text {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+        }
+
+        .form-label {
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        #submission-form {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border: 1px solid var(--neon-blue);
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        #submission-form::before {
+            content: "<<CODE_UPLOAD>>";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background-color: var(--dark-bg);
+            padding: 0 10px;
+            color: var(--neon-blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .language-badge {
+            padding: 5px 10px;
+            border-radius: 0;
+            font-family: 'Share Tech Mono', monospace;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* Floating particle animation */
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: var(--neon-blue);
+            opacity: 0.6;
+            border-radius: 50%;
+            animation: float-particle linear infinite;
+        }
+
+        @keyframes float-particle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        /* Success/Failure overlays */
+        .success-overlay, .failure-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 255, 159, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .failure-overlay {
+            background-color: rgba(255, 42, 109, 0.2);
+        }
+
+        .success-message, .failure-message {
+            font-size: 3rem;
+            color: var(--success-color);
+            text-shadow: 0 0 10px var(--success-color);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-weight: bold;
+            animation: pulsate 2s infinite;
+        }
+
+        .failure-message {
+            color: var(--fail-color);
+            text-shadow: 0 0 10px var(--fail-color);
+        }
+
+        @keyframes pulsate {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        /* Cyberpunk decorative elements */
+        .cyber-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+        }
+
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--neon-blue);
+            border-left: 2px solid var(--neon-blue);
+        }
+
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--neon-pink);
+            border-right: 2px solid var(--neon-pink);
+        }
+
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--neon-purple);
+            border-left: 2px solid var(--neon-purple);
+        }
+
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--neon-yellow);
+            border-right: 2px solid var(--neon-yellow);
+        }
+
+        /* Digital counter effect */
+        .digital-counter {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--neon-blue);
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border: 1px solid var(--neon-blue);
+            display: inline-block;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating particles animation -->
+    <div class="particle-container" id="particle-container"></div>
+    <div class="scanlines"></div>
+
+    <!-- Success/Failure overlays -->
+    <div id="success-overlay" class="success-overlay">
+        <div class="success-message" id="success-message">
+            ACCESS GRANTED!<br>PROCEED TO NEXT LEVEL
+        </div>
+    </div>
+    <div id="failure-overlay" class="failure-overlay">
+        <div class="failure-message" id="failure-message">
+            ACCESS DENIED!<br>EXECUTION FAILED
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <h1 class="glitch"><i class="fas fa-microchip me-2"></i>AMS Hackathon 2025</h1>
+            <p class="lead mb-0">COME & PROVE YOUR SKILLS!!<span class="blink">_</span></p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="instructions">
+            <div class="cyber-corner corner-tl"></div>
+            <div class="cyber-corner corner-tr"></div>
+            <div class="cyber-corner corner-bl"></div>
+            <div class="cyber-corner corner-br"></div>
+
+            <h3 class="mb-3"><i class="fas fa-terminal me-2"></i>OBJECTIVE: <span id="user-objective"></span></h3>
+            <p>Create a program that merges two numerical data streams and outputs their combined value to the net.</p>
+
+            <h5 class="mt-4 mb-2"><i class="fas fa-digital-tachograph me-2"></i>INPUT_STREAM:</h5>
+            <p>Two space-separated integers A and B.</p>
+
+            <h5 class="mt-3 mb-2"><i class="fas fa-broadcast-tower me-2"></i>OUTPUT_STREAM:</h5>
+            <p>A single integer representing the sum of A and B.</p>
+
+            <h5 class="mt-3 mb-2"><i class="fas fa-radiation-alt me-2"></i>SYSTEM_CONSTRAINTS:</h5>
+            <ul>
+                <li>-1000 ≤ A, B ≤ 1000</li>
+            </ul>
+
+            <h5 class="mt-3 mb-2"><i class="fas fa-vials me-2"></i>TEST_INJECTION:</h5>
+            <pre>5 7</pre>
+
+            <h5 class="mt-3 mb-2"><i class="fas fa-server me-2"></i>EXPECTED_RESPONSE:</h5>
+            <pre>12</pre>
+
+            <h5 class="mt-3 mb-2"><i class="fas fa-code me-2"></i>COMPATIBLE_PROTOCOLS:</h5>
+            <ul>
+                <li>C (.c) - Low-level system access</li>
+                <li>C++ (.cpp) - Enhanced memory manipulation</li>
+                <li>Java (.java) - Corporate runtime environment (Must contain a public class matching the filename)</li>
+                <li>Python (.py) - Rapid deployment interface</li>
+            </ul>
+        </div>
+
+        <form id="submission-form">
+            <div class="cyber-corner corner-tl"></div>
+            <div class="cyber-corner corner-tr"></div>
+            <div class="cyber-corner corner-bl"></div>
+            <div class="cyber-corner corner-br"></div>
+
+            <div class="mb-3">
+                <label for="code-file" class="form-label"><i class="fas fa-upload me-2"></i>INJECT YOUR CODE:</label>
+                <input class="form-control" type="file" id="code-file" accept=".c,.cpp,.java,.py" required>
+                <div class="form-text">MAX_SIZE: 1MB // PROTOCOLS: .c, .cpp, .java, .py</div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-rocket me-2"></i>COMPILE & EXECUTE
+            </button>
+        </form>
+
+        <div id="loading" class="d-none text-center">
+            <div class="loader"></div>
+            <p>COMPILING NEURAL CODE<span class="blink">...</span></p>
+        </div>
+
+        <div id="results" class="results d-none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3><i class="fas fa-clipboard-check me-2"></i>EXECUTION_RESULTS</h3>
+                <div id="score-display"></div>
+            </div>
+            <div id="results-container"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/languages/cpp.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Particle animation
+            const particleContainer = document.getElementById('particle-container');
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                // Random position
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+
+                // Random size
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Random color
+                const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--success-color)'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = color;
+                particle.style.boxShadow = `0 0 8px ${color}`;
+
+                // Random animation duration
+                const duration = Math.random() * 15 + 10;
+                particle.style.animationDuration = `${duration}s`;
+
+                // Random delay
+                const delay = Math.random() * 10;
+                particle.style.animationDelay = `${delay}s`;
+
+                particleContainer.appendChild(particle);
+            }
+
+            // Success/failure overlays
+            const successOverlay = document.getElementById('success-overlay');
+            const failureOverlay = document.getElementById('failure-overlay');
+
+            function showSuccessOverlay() {
+                successOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    successOverlay.style.opacity = '0';
+                }, 3000);
+            }
+
+            function showFailureOverlay() {
+                failureOverlay.style.opacity = '1';
+                setTimeout(() => {
+                    failureOverlay.style.opacity = '0';
+                }, 3000);
+            }
+
+            // Form submission setup
+            const submissionForm = document.getElementById('submission-form');
+            const loadingDiv = document.getElementById('loading');
+            const resultsDiv = document.getElementById('results');
+            const resultsContainer = document.getElementById('results-container');
+            const scoreDisplay = document.getElementById('score-display');
+
+            submissionForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const fileInput = document.getElementById('code-file');
+                if (!fileInput.files[0]) {
+                    alert('Please select a file to upload');
+                    return;
+                }
+
+                // Show loading, hide results
+                loadingDiv.classList.remove('d-none');
+                resultsDiv.classList.add('d-none');
+
+                const formData = new FormData();
+                formData.append('code', fileInput.files[0]);
+
+                try {
+                    const response = await fetch('/api/submit', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+                    displayResults(data);
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting your code');
+                } finally {
+                    loadingDiv.classList.add('d-none');
+                }
+            });
+
+            function displayResults(data) {
+                resultsContainer.innerHTML = '';
+
+                if (data.error || data.status === 'error') {
+                    // Display error message
+                    showFailureOverlay();
+
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'alert alert-danger';
+                    errorMsg.style.backgroundColor = 'rgba(255, 42, 109, 0.1)';
+                    errorMsg.style.color = 'var(--fail-color)';
+                    errorMsg.style.border = '1px solid var(--fail-color)';
+                    errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i><strong>Error (' + (data.phase || 'unknown') + '):</strong> ' + (data.message || data.error);
+                    resultsContainer.appendChild(errorMsg);
+                    scoreDisplay.innerHTML = '';
+                } else if (data.results) {
+                    // Display score and language info
+                    const score = data.score;
+                    const language = data.language || "unknown";
+
+                    // Language badge color mapping
+                    const languageColors = {
+                        'c': 'var(--neon-blue)',
+                        'cpp': 'var(--neon-purple)',
+                        'java': 'var(--neon-pink)',
+                        'python': 'var(--neon-yellow)',
+                        'py': 'var(--neon-yellow)'
+                    };
+
+                    let scoreColor, scoreClass;
+                    if (score.percentage === 100) {
+                        scoreColor = 'var(--success-color)';
+                        scoreClass = '';
+                        showSuccessOverlay();
+                    } else if (score.percentage >= 60) {
+                        scoreColor = 'var(--neon-yellow)';
+                        scoreClass = 'warning';
+                        showFailureOverlay();
+                    } else {
+                        scoreColor = 'var(--fail-color)';
+                        scoreClass = 'danger';
+                        showFailureOverlay();
+                    }
+
+                    const langColor = languageColors[language] || 'var(--neon-blue)';
+
+                    scoreDisplay.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <span class="language-badge me-2" style="color: ${langColor}; border: 1px solid ${langColor};">
+                                ${language.toUpperCase()}
+                            </span>
+                            <span class="score-badge" style="color: ${scoreColor}; border-color: ${scoreColor};">
+                                <span class="digital-counter">${score.passed}</span>/<span class="digital-counter">${score.total}</span>
+                                TESTS PASSED [<span class="digital-counter">${score.percentage}</span>%]
+                            </span>
+                        </div>
+                    `;
+
+                    // Display individual test cases
+                    data.results.forEach((result, index) => {
+                        const testCase = document.createElement('div');
+                        testCase.className = 'test-case ' + (result.passed ? 'pass' : 'fail');
+                        testCase.style.opacity = '0';
+                        testCase.style.transform = 'translateY(20px)';
+
+                        testCase.innerHTML = `
+                            <div class="cyber-corner corner-tl"></div>
+                            <div class="cyber-corner corner-tr"></div>
+                            <div class="cyber-corner corner-bl"></div>
+                            <div class="cyber-corner corner-br"></div>
+
+                            <h5><i class="fas ${result.passed ? 'fa-check-circle' : 'fa-times-circle'} me-2"></i>
+                            TEST_VECTOR_<span class="digital-counter">${result.id}</span>:
+                            ${result.passed ? '<span style="color: var(--success-color)">ACCESS_GRANTED</span>' :
+                                            '<span style="color: var(--fail-color)">ACCESS_DENIED</span>'}
+                            </h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <strong><i class="fas fa-arrow-right me-1"></i>INPUT:</strong>
+                                    <pre>${result.input}</pre>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong><i class="fas fa-bullseye me-1"></i>EXPECTED:</strong>
+                                    <pre>${result.expected}</pre>
+                                </div>
+                                <div class="col-md-4">
+                                    <strong><i class="fas fa-terminal me-1"></i>OUTPUT:</strong>
+                                    <pre>${result.actual || 'NO_OUTPUT_DETECTED'}</pre>
+                                </div>
+                            </div>
+
+                            <div class="mt-2">
+                                <small>
+                                    <i class="fas fa-clock me-1"></i>EXECUTION_TIME:
+                                    <span class="digital-counter">${result.execution_time}</span> ms
+                                </small>
+                            </div>
+                        `;
+
+                        resultsContainer.appendChild(testCase);
+
+                        // Animate the test case appearing
+                        setTimeout(() => {
+                            testCase.style.transition = 'all 0.3s ease';
+                            testCase.style.opacity = '1';
+                            testCase.style.transform = 'translateY(0)';
+                        }, 200 * index);
+                    });
+                }
+
+                resultsDiv.classList.remove('d-none');
+            }
+        });
+    </script>
+</body>
+</html>
