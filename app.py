@@ -14,10 +14,11 @@ from flask_session import Session  # Import Flask-Session
 # --- Firebase Admin SDK ---
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import auth # Import auth
+from firebase_admin import auth # Import auth  <--- ENSURE THIS LINE IS PRESENT AND CORRECT
 from firebase_admin import db
 
 app = Flask(__name__, static_folder='static')
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_default_secret_key_here') # Good practice to set secret key
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
