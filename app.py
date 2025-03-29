@@ -10,6 +10,11 @@ from werkzeug.utils import secure_filename
 import shutil
 from flask_session import Session  # Import Flask-Session
 
+app = Flask(__name__, static_folder='static')
+app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'your_default_secret_key_here')
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app) # Initialize Flask-Session FIRST
 
 # --- Firebase Admin SDK ---
 import firebase_admin
@@ -17,15 +22,10 @@ from firebase_admin import credentials
 from firebase_admin import auth # Import auth  <--- ENSURE THIS LINE IS PRESENT AND CORRECT
 from firebase_admin import db
 
-app = Flask(__name__, static_folder='static')
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_default_secret_key_here') # Good practice to set secret key
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
 app.config['CONFIG_FOLDER'] = 'config'
-app.config["SESSION_PERMANENT"] = False  # Session cookies are not permanent
-app.config["SESSION_TYPE"] = "filesystem"  # Use filesystem for sessions
-Session(app) # Initialize Flask-Session
 
 # Load Java paths if they exist
 java_path = 'java'  # Default fallback
