@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import os
 import subprocess
@@ -110,11 +111,26 @@ def create_default_test_cases():
 
 create_default_test_cases()
 
-# --- Firebase Initialization ---
-# Initialize Firebase Admin SDK with Application Default Credentials for Render
-cred = credentials.ApplicationDefault()
+# --- Firebase Initialization - Manual Credential Loading (NOT RECOMMENDED for production) ---
+credentials_json_string = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+
+if credentials_json_string:
+    try:
+        service_account_info = json.loads(credentials_json_string)
+        cred = credentials.Certificate(service_account_info) # Initialize from dictionary
+    except json.JSONDecodeError as e:
+        print(f"Error decoding GOOGLE_APPLICATION_CREDENTIALS JSON: {e}")
+        # Handle error appropriately - maybe exit or use default credentials?
+        cred = credentials.ApplicationDefault() # Fallback to Application Default in case of error
+    except Exception as e:
+        print(f"Error initializing Firebase from GOOGLE_APPLICATION_CREDENTIALS: {e}")
+        cred = credentials.ApplicationDefault() # Fallback
+else:
+    print("GOOGLE_APPLICATION_CREDENTIALS environment variable not set.")
+    cred = credentials.ApplicationDefault() # Fallback
+
 firebase_admin.initialize_app(cred, {
-    'databaseURL': os.environ.get('FIREBASE_DATABASE_URL') # Get Database URL from Environment Variable
+    'databaseURL': os.environ.get('FIREBASE_DATABASE_URL') # Keep using environment variable for Database URL
 })
 
 # Reference to the node where your challenge data is stored in Firebase
