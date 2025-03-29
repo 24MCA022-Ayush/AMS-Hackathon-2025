@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, session
+from flask import Flask, request, jsonify, render_template, send_from_directory
 import os
 import subprocess
 import tempfile
@@ -8,20 +8,14 @@ import time
 import re
 from werkzeug.utils import secure_filename
 import shutil
-from flask_session import Session  # Import Flask-Session
-
-app = Flask(__name__, static_folder='static')
-app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'your_default_secret_key_here')
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app) # Initialize Flask-Session FIRST
 
 # --- Firebase Admin SDK ---
 import firebase_admin
 from firebase_admin import credentials
-from firebase_admin import auth # Import auth  <--- ENSURE THIS LINE IS PRESENT AND CORRECT
+from firebase_admin import auth # Import auth
 from firebase_admin import db
 
+app = Flask(__name__, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
@@ -141,54 +135,23 @@ firebase_admin.initialize_app(cred, {
 
 # Reference to the node where your challenge data is stored in Firebase
 challenge_data_ref = db.reference('/challengeData') # Assuming your data is under a 'challengeData' node
-users_data_ref = db.reference('/usersData')
 
-@app.route('/', methods=['GET', 'POST']) # Allow POST for login submission
+
+@app.route('/')
 def login_page():
-    if request.method == 'POST':
-        team_name = request.form.get('team-name')
-        entry_code = request.form.get('entry-code')
-
-        try:
-            print(f"[/login] Attempting login for team: {team_name}") # Debug log
-            user = auth.sign_in_with_email_and_password(f"{team_name}@hackathon.ams", entry_code)
-            print(f"[/login] Login successful for user: {user['email']}") # Debug log
-            session['user_uid'] = user['localId']
-            print(f"[/login] User UID set in session: {session['user_uid']}") # Debug log
-            return redirect(url_for('hackathon_page'))
-        except Exception as e:
-            error_message = str(e)
-            print(f"[/login] Login failed: {e}") # Debug log
-            return render_template('index.html', login_error=error_message)
-    print("[/login] Serving login page (GET request).") # Debug log
-    return render_template('index.html', login_error=None)
+    return render_template('index.html') # Serve login page at root
 
 @app.route('/hackathon')
-def hackathon_page():
-    user_uid = session.get('user_uid')
-    print(f"[/hackathon] User UID from session: {user_uid}") # Debug log
-
-    if not user_uid:
-        print("[/hackathon] No user_uid in session, redirecting to login.") # Debug log
-        return redirect(url_for('login_page'))
-
+def index():
     try:
-        print("[/hackathon] Attempting to fetch challenge data from Firebase...") # Debug log
+        # Fetch challenge data from Firebase
         challenge_data = challenge_data_ref.get()
-        print(f"[/hackathon] Challenge data fetched: {challenge_data}") # Debug log
         if challenge_data:
-            return render_template('hackathon.html', challenge_data=challenge_data)
+            return render_template('hackathon.html', challenge_data=challenge_data) # Serve hackathon page at /hackathon
         else:
-            print("[/hackathon] Error: Challenge data is None (not found or empty).") # Debug log
-            return "Error: Challenge data not found in Firebase.", 500
+            return "Error: Challenge data not found in Firebase.", 500 # Handle error if data is not found
     except Exception as e:
-        print(f"[/hackathon] Exception while fetching challenge data: {e}") # Debug log
-        return f"Error fetching challenge data from Firebase: {e}", 500
-
-@app.route('/logout') # Optional logout route
-def logout():
-    session.pop('user_uid', None) # Clear user session
-    return redirect(url_for('login_page')) # Redirect to login page after logout
+        return f"Error fetching challenge data from Firebase: {e}", 500 # Handle Firebase connection errors
 
 
 @app.route('/static/<path:path>')

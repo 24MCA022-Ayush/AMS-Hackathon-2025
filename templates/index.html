@@ -445,39 +445,25 @@
 
                 loginErrorDiv.classList.add('d-none'); // Hide error message initially
 
-                fetch('/', { // Submit to the root path '/' which now handles login in app.py
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded', // Send as form data
-                    },
-                    body: new URLSearchParams({
-                        'team-name': teamName,
-                        'entry-code': entryCode
+                firebase.auth().signInWithEmailAndPassword(teamName + "@hackathon.ams", entryCode)
+                    .then((userCredential) => {
+                        // Login successful
+                        const user = userCredential.user;
+                        console.log("Login successful:", user);
+                        window.location.href = '/hackathon'; // Redirect to hackathon page
                     })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/hackathon'; // Redirect to hackathon page on successful login
-                    } else {
-                        return response.text().then(errorMessage => { // Get error message from response
-                            loginErrorDiv.textContent = "Login failed: " + errorMessage;
-                            loginErrorDiv.classList.remove('d-none');
-                            document.querySelector('.login-card').classList.add('shake');
-                            setTimeout(() => {
-                                document.querySelector('.login-card').classList.remove('shake');
-                            }, 500);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Login error:', error);
-                    loginErrorDiv.textContent = "Login failed: An unexpected error occurred.";
-                    loginErrorDiv.classList.remove('d-none');
-                    document.querySelector('.login-card').classList.add('shake');
-                    setTimeout(() => {
-                        document.querySelector('.login-card').classList.remove('shake');
-                    }, 500);
-                });
+                    .catch((error) => {
+                        // Login failed
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.error("Login error:", errorCode, errorMessage);
+                        loginErrorDiv.textContent = "Login failed: " + errorMessage; // Display Firebase error message
+                        loginErrorDiv.classList.remove('d-none'); // Show error message
+                        document.querySelector('.login-card').classList.add('shake');
+                        setTimeout(() => {
+                            document.querySelector('.login-card').classList.remove('shake');
+                        }, 500);
+                    });
             });
         });
     </script>

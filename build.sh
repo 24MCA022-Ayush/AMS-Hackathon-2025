@@ -45,9 +45,6 @@ export PATH="$JAVA_HOME/bin:$PATH"
 java -version
 javac -version
 
-echo "Upgrading pip..."  # Add this line to upgrade pip
-/opt/render/project/src/.venv/bin/python3.9 -m pip install --upgrade pip
-
 # Install Python dependencies (rest of your script)
 pip install -r requirements.txt
 

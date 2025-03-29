@@ -8,19 +8,7 @@ def create_firebase_users():
     """Creates Firebase Authentication users and sets their objectives in Realtime Database."""
 
     # --- Firebase Initialization - Manual Credential Loading - INSECURE, FOR LOCAL TESTING ONLY ---
-    cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": "YOUR_PROJECT_ID",                 # Replace with your Project ID
-        "private_key_id": "YOUR_PRIVATE_KEY_ID",           # Replace with your private_key_id from serviceAccountKey.json
-        "private_key": "-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_CONTENT_HERE\n-----END PRIVATE KEY-----\n", # Replace with your private_key content (multi-line string)
-        "client_email": "YOUR_CLIENT_EMAIL",             # Replace with your client_email
-        "client_id": "YOUR_CLIENT_ID",                 # Replace with your client_id
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/YOUR_CLIENT_X509_CERT_URL", # Replace with your client_x509_cert_url
-        "universe_domain": "googleapis.com"
-    })
+    
 
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://ams-hackathon-2025-default-rtdb.firebaseio.com'
