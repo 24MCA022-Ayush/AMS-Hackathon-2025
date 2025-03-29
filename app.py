@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, session # Import redirect and session
 import os
 import subprocess
 import tempfile
@@ -8,6 +8,8 @@ import time
 import re
 from werkzeug.utils import secure_filename
 import shutil
+from flask_session import Session # Import Flask-Session
+from functools import wraps # for login_required decorator
 
 # --- Firebase Admin SDK ---
 import firebase_admin
@@ -20,6 +22,14 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['TEST_CASES_FOLDER'] = 'test_cases'
 app.config['CONFIG_FOLDER'] = 'config'
+
+# Configure session
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem" # Use filesystem for sessions
+Session(app) # Initialize Flask-Session
+
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'your_default_secret_key') # Good practice to set a secret key
+
 
 # Load Java paths if they exist
 java_path = 'java'  # Default fallback
@@ -136,21 +146,49 @@ firebase_admin.initialize_app(cred, {
 # Reference to the node where your challenge data is stored in Firebase
 challenge_data_ref = db.reference('/challengeData') # Assuming your data is under a 'challengeData' node
 
+# --- Login Decorator ---
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("team_name") is None:
+            return redirect("/") # Redirect to login if not logged in
+        return f(*args, **kwargs)
+    return decorated_function
+
+# --- Session Management Routes ---
+@app.route('/api/login_session', methods=['POST'])
+def login_session():
+    data = request.get_json()
+    team_name = data.get('teamName')
+    if team_name:
+        session["team_name"] = team_name # Store team name in session
+        return jsonify({"status": "success", "message": "Session initialized"}), 200
+    return jsonify({"status": "error", "message": "Team name missing"}), 400
+
+@app.route('/api/logout_session', methods=['POST'])
+def logout_session():
+    session.pop("team_name", None) # Clear session data
+    return jsonify({"status": "success", "message": "Logged out"}), 200
+
 
 @app.route('/')
 def login_page():
-    return render_template('index.html') # Serve login page at root
+    if session.get("team_name"): # If user is already logged in
+        return redirect("/hackathon") # Redirect to hackathon page
+    return render_template('index.html') # Serve login page at root if not logged in
 
 @app.route('/hackathon')
-def index():
+@login_required # Protect hackathon page
+def hackathon_page():
+    team_name = session.get("team_name") # Get team name from session
     try:
         # Fetch challenge data from Firebase
         challenge_data = challenge_data_ref.get()
         if challenge_data:
-            return render_template('hackathon.html', challenge_data=challenge_data) # Serve hackathon page at /hackathon
+            return render_template('hackathon.html', challenge_data=challenge_data, team_name=team_name) # Serve hackathon page at /hackathon and pass team_name
         else:
             return "Error: Challenge data not found in Firebase.", 500 # Handle error if data is not found
-    except Exception as e:
+    except Exception as e: # Catch potential Firebase errors
         return f"Error fetching challenge data from Firebase: {e}", 500 # Handle Firebase connection errors
 
 
@@ -163,7 +201,7 @@ def get_test_cases():
     with open(test_cases_file, 'r') as f:
         return json.load(f)
 
-@app.route('/api/submit', methods=['POST'])
+@app.route('/api/submit', methods=['POST']) # No login required for submission in this version, could be added
 def submit_code():
     # Get the submitted code
     if 'code' not in request.files:

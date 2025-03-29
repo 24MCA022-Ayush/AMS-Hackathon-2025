@@ -48,6 +48,9 @@ javac -version
 # Install Python dependencies (rest of your script)
 pip install -r requirements.txt
 
+# Install Flask-Session
+pip install Flask-Session
+
 # Create necessary directories
 mkdir -p uploads
 mkdir -p test_cases

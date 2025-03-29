@@ -622,6 +622,10 @@
         </div>
     </div>
 
+    <div class="container mt-3">
+        <button onclick="logout()" class="btn btn-secondary"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/core.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/languages/cpp.min.js"></script>
 
@@ -833,6 +837,13 @@
                 resultsDiv.classList.remove('d-none');
             }
         });
+
+        function logout() {
+            fetch('/api/logout_session', { method: 'POST' })
+            .then(response => {
+                window.location.href = '/'; // Redirect to login page after logout
+            });
+        }
     </script>
 </body>
 </html>

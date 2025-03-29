@@ -452,6 +452,15 @@
                         console.log("Login successful:", user);
                         window.location.href = '/hackathon'; // Redirect to hackathon page
                     })
+                    .then(() => {
+                        // Send team name to server to store in server-side session
+                        fetch('/api/login_session', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ teamName: teamName })
+                        }); // No need to wait for response, redirect happens after Firebase auth
+                    })
+
                     .catch((error) => {
                         // Login failed
                         const errorCode = error.code;
