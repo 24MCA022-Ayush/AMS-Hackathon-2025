@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory
+from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, session
 import os
 import subprocess
 import tempfile
@@ -149,28 +149,39 @@ def login_page():
         entry_code = request.form.get('entry-code')
 
         try:
+            print(f"[/login] Attempting login for team: {team_name}") # Debug log
             user = auth.sign_in_with_email_and_password(f"{team_name}@hackathon.ams", entry_code)
-            session['user_uid'] = user['localId'] # Store user UID in session
-            return redirect(url_for('hackathon_page')) # Redirect to hackathon page on successful login
+            print(f"[/login] Login successful for user: {user['email']}") # Debug log
+            session['user_uid'] = user['localId']
+            print(f"[/login] User UID set in session: {session['user_uid']}") # Debug log
+            return redirect(url_for('hackathon_page'))
         except Exception as e:
             error_message = str(e)
-            return render_template('index.html', login_error=error_message) # Render login page with error
-    return render_template('index.html', login_error=None) # Serve login page on GET
+            print(f"[/login] Login failed: {e}") # Debug log
+            return render_template('index.html', login_error=error_message)
+    print("[/login] Serving login page (GET request).") # Debug log
+    return render_template('index.html', login_error=None)
 
 @app.route('/hackathon')
 def hackathon_page():
-    user_uid = session.get('user_uid') # Get user UID from session
+    user_uid = session.get('user_uid')
+    print(f"[/hackathon] User UID from session: {user_uid}") # Debug log
 
-    if not user_uid: # Check if user UID is in session
-        return redirect(url_for('login_page')) # Redirect to login if not logged in
+    if not user_uid:
+        print("[/hackathon] No user_uid in session, redirecting to login.") # Debug log
+        return redirect(url_for('login_page'))
 
     try:
+        print("[/hackathon] Attempting to fetch challenge data from Firebase...") # Debug log
         challenge_data = challenge_data_ref.get()
+        print(f"[/hackathon] Challenge data fetched: {challenge_data}") # Debug log
         if challenge_data:
             return render_template('hackathon.html', challenge_data=challenge_data)
         else:
+            print("[/hackathon] Error: Challenge data is None (not found or empty).") # Debug log
             return "Error: Challenge data not found in Firebase.", 500
     except Exception as e:
+        print(f"[/hackathon] Exception while fetching challenge data: {e}") # Debug log
         return f"Error fetching challenge data from Firebase: {e}", 500
 
 @app.route('/logout') # Optional logout route
