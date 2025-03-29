@@ -9,6 +9,11 @@ import re
 from werkzeug.utils import secure_filename
 import shutil
 
+# --- Firebase Admin SDK ---
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
 app = Flask(__name__, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -36,7 +41,7 @@ if os.path.exists(java_config_file):
 if not java_path or not javac_path:
     alt_java_paths_file = os.path.join(app.config['CONFIG_FOLDER'], 'alt_java_paths.txt')
     alt_javac_paths_file = os.path.join(app.config['CONFIG_FOLDER'], 'alt_javac_paths.txt')
-    
+
     if os.path.exists(alt_java_paths_file):
         try:
             with open(alt_java_paths_file, 'r') as f:
@@ -46,7 +51,7 @@ if not java_path or not javac_path:
                     print(f"Using alternative Java path: {java_path}")
         except Exception as e:
             print(f"Error loading alternative Java paths: {e}")
-    
+
     if os.path.exists(alt_javac_paths_file):
         try:
             with open(alt_javac_paths_file, 'r') as f:
@@ -97,7 +102,7 @@ def create_default_test_cases():
         {"id": "4", "input": "-5 10\n", "expected_output": "5\n"},
         {"id": "5", "input": "100 -30\n", "expected_output": "70\n"}
     ]
-    
+
     test_cases_file = os.path.join(app.config['TEST_CASES_FOLDER'], 'test_cases.json')
     if not os.path.exists(test_cases_file):
         with open(test_cases_file, 'w') as f:
@@ -105,9 +110,29 @@ def create_default_test_cases():
 
 create_default_test_cases()
 
+# --- Firebase Initialization ---
+# Initialize Firebase Admin SDK with Application Default Credentials for Render
+cred = credentials.ApplicationDefault()
+firebase_admin.initialize_app(cred, {
+    'databaseURL': os.environ.get('FIREBASE_DATABASE_URL') # Get Database URL from Environment Variable
+})
+
+# Reference to the node where your challenge data is stored in Firebase
+challenge_data_ref = db.reference('/challengeData') # Assuming your data is under a 'challengeData' node
+
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        # Fetch challenge data from Firebase
+        challenge_data = challenge_data_ref.get()
+        if challenge_data:
+            return render_template('index.html', challenge_data=challenge_data)
+        else:
+            return "Error: Challenge data not found in Firebase.", 500 # Handle error if data is not found
+    except Exception as e:
+        return f"Error fetching challenge data from Firebase: {e}", 500 # Handle Firebase connection errors
+
 
 @app.route('/static/<path:path>')
 def serve_static(path):
@@ -123,45 +148,45 @@ def submit_code():
     # Get the submitted code
     if 'code' not in request.files:
         return jsonify({"error": "No code file provided"})
-    
+
     code_file = request.files['code']
     if code_file.filename == '':
         return jsonify({"error": "No file selected"})
-    
+
     # Create a unique ID for this submission
     submission_id = str(uuid.uuid4())
-    
+
     # Create a temporary directory for this submission
     temp_dir = os.path.join(app.config['UPLOAD_FOLDER'], submission_id)
     os.makedirs(temp_dir, exist_ok=True)
-    
+
     try:
         # Save the uploaded file with a secure filename
         filename = secure_filename(code_file.filename)
         file_path = os.path.join(temp_dir, filename)
         code_file.save(file_path)
-        
+
         # Detect the programming language from file extension
         file_ext = os.path.splitext(filename)[1].lower()
         language = None
-        
+
         for lang, config in app.config['SUPPORTED_LANGUAGES'].items():
             if file_ext == config['file_ext']:
                 language = lang
                 break
-        
+
         if language is None:
             return jsonify({
                 "status": "error",
                 "phase": "validation",
                 "message": f"Unsupported file type: {file_ext}. Please upload a .c, .cpp, .java, or .py file."
             })
-        
+
         # Handle the code based on the detected language
         try:
             language_config = app.config['SUPPORTED_LANGUAGES'][language]
             exe_file = f"{temp_dir}/solution"
-            
+
             # Special handling for Java
             classname = None
             if language == 'java':
@@ -172,7 +197,7 @@ def submit_code():
                         "phase": "environment",
                         "message": "Java compiler (javac) is not available on this server. Please use C, C++, or Python instead."
                     })
-                
+
                 # Extract class name from Java file
                 with open(file_path, 'r') as f:
                     content = f.read()
@@ -190,15 +215,15 @@ def submit_code():
                     new_file_path = os.path.join(temp_dir, f"{classname}.java")
                     os.rename(file_path, new_file_path)
                     file_path = new_file_path
-            
+
             # Compile the code if needed
             if language_config['compile_cmd'] is not None:
                 compile_cmd = [cmd.format(
-                    source_file=file_path, 
-                    exe_file=exe_file, 
+                    source_file=file_path,
+                    exe_file=exe_file,
                     dir=temp_dir,
                     classname=classname) for cmd in language_config['compile_cmd']]
-                
+
                 print(f"Compiling with command: {compile_cmd}")
                 try:
                     compile_result = subprocess.run(
@@ -206,7 +231,7 @@ def submit_code():
                         capture_output=True,
                         timeout=30
                     )
-                    
+
                     if compile_result.returncode != 0:
                         error_msg = compile_result.stderr.decode()
                         print(f"Compilation error: {error_msg}")
@@ -223,26 +248,26 @@ def submit_code():
                         "phase": "environment",
                         "message": f"Compiler '{compiler_name}' not found. Please contact the administrator."
                     })
-            
+
             # Run the tests
             results = []
             test_cases = get_test_cases()
-            
+
             for test_case in test_cases:
                 # Prepare the run command
                 run_cmd = [cmd.format(
-                    source_file=file_path, 
-                    exe_file=exe_file, 
+                    source_file=file_path,
+                    exe_file=exe_file,
                     dir=temp_dir,
                     classname=classname) for cmd in language_config['run_cmd']]
-                
+
                 result = run_test_case(run_cmd, test_case, language_config['timeout'])
                 results.append(result)
-            
+
             # Calculate score
             passed = sum(1 for r in results if r["passed"])
             total = len(results)
-            
+
             return jsonify({
                 "status": "success",
                 "submission_id": submission_id,
@@ -254,27 +279,27 @@ def submit_code():
                     "percentage": round((passed / total) * 100, 2)
                 }
             })
-        
+
         except subprocess.TimeoutExpired:
             return jsonify({
                 "status": "error",
                 "phase": "compilation",
                 "message": "Compilation timed out after 30 seconds"
             })
-        
+
         except Exception as e:
             return jsonify({
                 "status": "error",
                 "phase": "process",
                 "message": str(e)
             })
-            
+
     finally:
         # Schedule cleanup (don't block the response)
         def cleanup():
             time.sleep(300)  # Keep files for 5 minutes for debugging
             shutil.rmtree(temp_dir, ignore_errors=True)
-        
+
         # In a production app, you'd use a task queue here
         # For simplicity, we're just scheduling deletion after a delay
         # This won't work properly on Render, so you'd need to implement proper cleanup
@@ -291,16 +316,16 @@ def run_test_case(run_cmd, test_case, timeout_seconds):
             timeout=timeout_seconds
         )
         execution_time = time.time() - start_time
-        
+
         # Check if output matches expected
         actual_output = process.stdout
         expected_output = test_case["expected_output"]
-        
+
         # Normalize line endings and whitespace for comparison
         actual_normalized = actual_output.strip().replace('\r\n', '\n')
         expected_normalized = expected_output.strip().replace('\r\n', '\n')
         passed = actual_normalized == expected_normalized
-        
+
         return {
             "id": test_case["id"],
             "passed": passed,
