@@ -1,64 +1,2181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMS Hackathon 2025 - Home</title>
+    <title>CodeBlocs 2025 | Technical Hackathon</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-purple: #d442fe;
+            --neon-yellow: #ffd319;
+            --dark-bg: #0e1121;
+            --darker-bg: #090b17;
+            --card-bg: #14162b;
+            --success-color: #00ff9f;
+            --fail-color: #ff2a6d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
         body {
-            background-color: #0e1121; /* Dark background */
+            background-color: var(--dark-bg);
             color: #dedede;
-            font-family: 'Rajdhani', sans-serif; /* Cyberpunk font */
+            font-family: 'Rajdhani', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            opacity: 0;
+            animation: fadeIn 2.5s forwards 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--darker-bg);
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            flex-direction: column;
         }
-        .container {
+        
+        .preloader-cube {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            perspective: 800px;
+            margin-bottom: 2rem;
+        }
+        
+        .preloader-cube-inner {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: preloaderRotate 2s infinite linear;
+        }
+        
+        @keyframes preloaderRotate {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+        
+        .preloader-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(5, 217, 232, 0.1);
+            border: 2px solid var(--neon-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4) inset;
+        }
+        
+        .preloader-front { transform: translateZ(40px); }
+        .preloader-back { transform: rotateY(180deg) translateZ(40px); }
+        .preloader-right { transform: rotateY(90deg) translateZ(40px); }
+        .preloader-left { transform: rotateY(-90deg) translateZ(40px); }
+        .preloader-top { transform: rotateX(90deg) translateZ(40px); }
+        .preloader-bottom { transform: rotateX(-90deg) translateZ(40px); }
+        
+        .preloader-text {
             text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            letter-spacing: 2px;
         }
-        h1 {
-            color: #05d9e8; /* Neon Blue */
-            font-size: 3em;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #05d9e8;
+        
+        .preloader-progress {
+            width: 200px;
+            height: 4px;
+            background-color: rgba(5, 217, 232, 0.2);
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
         }
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
+        
+        .preloader-progress-bar {
+            position: absolute;
+            height: 100%;
+            width: 0;
+            background-color: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            animation: progress 2.5s forwards;
         }
-        .btn-primary {
-            background: linear-gradient(90deg, #05d9e8, #d442fe); /* Neon gradient button */
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            border-radius: 5px;
-            font-size: 1.1em;
+        
+        @keyframes progress {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+        
+        /* Grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent),
+                linear-gradient(90deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            animation: revealGrid 2s forwards 1s;
+        }
+        
+        @keyframes revealGrid {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Navbar */
+        .cyber-navbar {
+            background-color: rgba(9, 11, 23, 0.8);
+            border-bottom: 1px solid var(--neon-blue);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transform: translateY(-100%);
+            animation: slideDown 1s forwards 3s;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--neon-blue);
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px var(--neon-blue);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand:hover {
+            color: var(--neon-pink);
+            text-shadow: 0 0 8px var(--neon-pink);
+        }
+        
+        .navbar-brand i {
+            margin-right: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: #dedede;
+            margin: 0 0.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 1px;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .nav-link::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--neon-pink);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--neon-pink);
+        }
+        
+        .nav-link:hover::before {
+            transform: translateX(0);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--neon-blue);
+            opacity: 0;
+            border-radius: 50%;
+            animation: float-particle linear infinite;
+        }
+        
+        @keyframes float-particle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+        
+        /* Binary rain effect */
+        .binary-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 2s forwards 2s;
+        }
+        
+        .binary-rain {
+            position: absolute;
+            color: var(--neon-blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            opacity: 0.2;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.2;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(1000px);
+                opacity: 0;
+            }
+        }
+        
+        /* Circuit board background */
+        .circuit-board {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(9, 11, 23, 0.9) 0%, rgba(20, 22, 43, 0.8) 100%);
+            z-index: -2;
+            opacity: 0;
+            animation: fadeIn 2s forwards 1.5s;
+        }
+        
+        .circuit-line {
+            position: absolute;
+            background-color: var(--neon-blue);
+            opacity: 0.3;
+        }
+        
+        .circuit-node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue);
+            opacity: 0.7;
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { 
+                opacity: 0.3;
+                box-shadow: 0 0 5px var(--neon-blue);
+            }
+            100% { 
+                opacity: 0.8;
+                box-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(5, 217, 232, 0.4);
+            }
+        }
+        
+        /* Hero content */
+        .hero-content {
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 2s forwards 3s;
+        }
+        
+        /* Logo animation */
+        .logo-container {
+            position: relative;
+            margin: 0 auto 2rem;
+            width: 180px;
+            height: 180px;
+            perspective: 1000px;
+        }
+        
+        .logo-cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 20s infinite linear;
+        }
+        
+        @keyframes rotateCube {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+            }
+        }
+        
+        .logo-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--neon-blue);
+            background-color: rgba(9, 11, 23, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4) inset;
+        }
+        
+        .logo-front {
+            transform: translateZ(90px);
+        }
+        
+        .logo-back {
+            transform: rotateY(180deg) translateZ(90px);
+        }
+        
+        .logo-right {
+            transform: rotateY(90deg) translateZ(90px);
+        }
+        
+        .logo-left {
+            transform: rotateY(-90deg) translateZ(90px);
+        }
+        
+        .logo-top {
+            transform: rotateX(90deg) translateZ(90px);
+        }
+        
+        .logo-bottom {
+            transform: rotateX(-90deg) translateZ(90px);
+        }
+        
+        .logo-side i {
+            font-size: 60px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        /* Glitch title */
+        .hero-title {
+            color: var(--neon-blue);
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue);
+            animation: textShadow 2s infinite;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        @keyframes textShadow {
+            0% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+            14% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+            15% {
+                text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue),
+                            -0.05em -0.05em 0 var(--neon-purple);
+            }
+            49% {
+                text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue),
+                            -0.05em -0.05em 0 var(--neon-purple);
+            }
+            50% {
+                text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue),
+                            0 -0.05em 0 var(--neon-purple);
+            }
+            99% {
+                text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue),
+                            0 -0.05em 0 var(--neon-purple);
+            }
+            100% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+        }
+        
+        .glitch-layers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .glitch-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateX(0);
+            mix-blend-mode: overlay;
+        }
+        
+        .glitch-layer:nth-child(1) {
+            left: 2px;
+            color: var(--neon-pink);
+            animation: glitchAnimation1 3s infinite linear alternate;
+        }
+        
+        .glitch-layer:nth-child(2) {
+            left: -2px;
+            color: var(--neon-blue);
+            animation: glitchAnimation2 4s infinite linear alternate;
+        }
+        
+        @keyframes glitchAnimation1 {
+            0% {
+                clip-path: inset(30% 0 40% 0);
+            }
+            20% {
+                clip-path: inset(80% 0 10% 0);
+            }
+            40% {
+                clip-path: inset(20% 0 58% 0);
+            }
+            60% {
+                clip-path: inset(80% 0 15% 0);
+            }
+            80% {
+                clip-path: inset(15% 0 78% 0);
+            }
+            100% {
+                clip-path: inset(60% 0 25% 0);
+            }
+        }
+        
+        @keyframes glitchAnimation2 {
+            0% {
+                clip-path: inset(10% 0 70% 0);
+            }
+            20% {
+                clip-path: inset(30% 0 50% 0);
+            }
+            40% {
+                clip-path: inset(50% 0 30% 0);
+            }
+            60% {
+                clip-path: inset(20% 0 70% 0);
+            }
+            80% {
+                clip-path: inset(80% 0 5% 0);
+            }
+            100% {
+                clip-path: inset(45% 0 40% 0);
+            }
+        }
+        
+        .hero-subtitle {
+            color: var(--neon-purple);
+            font-size: 1.5rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 5px var(--neon-purple);
+            display: inline-block;
+            background-color: rgba(9, 11, 23, 0.6);
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--neon-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-subtitle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 66, 254, 0.4), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        .event-badge {
+            display: inline-block;
+            background-color: var(--darker-bg);
+            color: var(--neon-pink);
+            padding: 0.3rem 0.8rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-left: 1rem;
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+            position: relative;
+            animation: badgePulse 3s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 42, 109, 0.6);
+            }
+        }
+        
+        .hero-event-info {
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 2rem;
+        }
+        
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--neon-blue);
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeIn 1s forwards 4s, bounce 2s infinite 4s;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+        
+        /* Process Section */
+        .process-section {
+            padding: 6rem 0;
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--neon-blue);
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+        }
+        
+        .process-timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .process-timeline::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 4rem;
+            width: 100%;
+        }
+        
+        .timeline-content {
+            position: relative;
+            width: 45%;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 15px rgba(5, 217, 232, 0.2);
+            transition: all 0.5s ease;
+        }
+        
+        .timeline-content:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4);
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            float: left;
+            border-right: 3px solid var(--neon-blue);
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            float: right;
+            border-left: 3px solid var(--neon-pink);
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px var(--neon-blue);
+            z-index: 10;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-dot {
+            background-color: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+        
+        .timeline-item:nth-child(3) .timeline-dot {
+            background-color: var(--neon-purple);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+        
+        .timeline-title {
+            color: var(--neon-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-title {
+            color: var(--neon-pink);
+        }
+        
+        .timeline-item:nth-child(3) .timeline-title {
+            color: var(--neon-purple);
+        }
+        
+        .timeline-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .btn-cyber {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn-cyber:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(5, 217, 232, 0.5);
+            color: #ffffff;
+        }
+        
+        .btn-cyber::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-cyber:hover::before {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) .btn-cyber {
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+        }
+        
+        .timeline-item:nth-child(even) .btn-cyber::before {
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+        }
+        
+        .timeline-item:nth-child(odd) {
+            transform: translateX(-30px);
+            opacity: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            transform: translateX(30px);
+            opacity: 0;
+        }
+        
+        .timeline-item.show {
+            transform: translateX(0);
+            opacity: 1;
+            transition: all 1s ease;
+        }
+        
+        /* Event Info Section */
+        .event-info-section {
+            padding: 6rem 0;
+            background-color: rgba(9, 11, 23, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .event-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+        
+        .info-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border: 1px solid var(--neon-blue);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            height: 100%;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4);
+        }
+        
+        .info-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+        }
+        
+        .info-icon {
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .info-title {
+            color: var(--neon-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .info-content {
+            line-height: 1.6;
+        }
+        
+        .info-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .info-content ul li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .info-content ul li::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: var(--neon-purple);
+        }
+        /* Team Section */
+.team-section {
+    padding: 6rem 0;
+    position: relative;
+}
+
+.team-container {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+.team-intro {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 4rem;
+}
+
+/* Team organization CSS */
+.team-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.team-row:first-child .team-member {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 2rem;
+}
+
+.team-row:nth-child(2) .team-member {
+    flex: 0 0 calc(50% - 2rem);
+    margin: 0 1rem 2rem;
+}
+
+/* Fix for rows 3, 4, and 5 */
+.team-row:nth-child(3) .team-member,
+.team-row:nth-child(4) .team-member,
+.team-row:nth-child(5) .team-member {
+    flex: 0 0 calc(33.333% - 2rem);
+    max-width: calc(33.333% - 2rem);
+    margin: 0 1rem 2rem;
+    box-sizing: border-box;
+}
+
+/* Ensure proper display on smaller screens */
+@media (max-width: 992px) {
+    .team-row:nth-child(3) .team-member,
+    .team-row:nth-child(4) .team-member,
+    .team-row:nth-child(5) .team-member {
+        flex: 0 0 calc(50% - 2rem);
+        max-width: calc(50% - 2rem);
+    }
+}
+
+@media (max-width: 576px) {
+    .team-row:nth-child(3) .team-member,
+    .team-row:nth-child(4) .team-member,
+    .team-row:nth-child(5) .team-member {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+.team-member {
+    background-color: var(--card-bg);
+    padding: 2.5rem;
+    border: 1px solid var(--neon-blue);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s ease;
+    transform: translateY(50px);
+    opacity: 0;
+}
+
+.team-member.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.team-member:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 20px rgba(5, 217, 232, 0.4);
+}
+        .member-avatar {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 2rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .avatar-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            animation: pulse 2s infinite alternate;
+        }
+        
+        .avatar-icon {
+            font-size: 4rem;
+            color: var(--neon-blue);
+            z-index: 1;
+            animation: iconPulse 3s infinite alternate;
+        }
+        
+        @keyframes iconPulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 5px var(--neon-blue);
+            }
+            100% {
+                transform: scale(1.1);
+                text-shadow: 0 0 15px var(--neon-blue), 0 0 30px var(--neon-blue);
+            }
+        }
+        
+        .member-name {
+            font-size: 1.8rem;
+            color: var(--neon-blue);
+            text-align: center;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+        
+        .member-title {
+            color: var(--neon-purple);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        
+        .member-bio {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .member-social {
+            text-align: center;
+        }
+        
+        .social-link {
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .social-link:hover {
+            color: var(--neon-pink);
+            transform: translateY(-5px);
+        }
+        
+        /* Cyber corners */
+        .cyber-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            z-index: 1;
+        }
+        
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--neon-blue);
+            border-left: 2px solid var(--neon-blue);
+        }
+        
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--neon-pink);
+            border-right: 2px solid var(--neon-pink);
+        }
+        
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--neon-purple);
+            border-left: 2px solid var(--neon-purple);
+        }
+        
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--neon-yellow);
+            border-right: 2px solid var(--neon-yellow);
+        }
+        
+        /* Alert styling */
+        .cyber-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--card-bg);
+            border: 1px solid var(--neon-pink);
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            z-index: 1010;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.3);
+            opacity: 0;
+            visibility: hidden;
             transition: all 0.3s ease;
         }
-        .btn-primary:hover {
-            box-shadow: 0 0 20px rgba(212, 66, 254, 0.5); /* Hover glow */
-            transform: translateY(-2px);
+        
+        .cyber-alert.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .cyber-alert-title {
+            color: var(--neon-pink);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .cyber-alert-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .cyber-alert-close {
+            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple));
+            border: none;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cyber-alert-close:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 42, 109, 0.5);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(9, 11, 23, 0.8);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 998;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+        
+        /* Footer */
+        .cyber-footer {
+            background-color: rgba(9, 11, 23, 0.9);
+            border-top: 1px solid var(--neon-blue);
+            padding: 4rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-circuit-line {
+            position: absolute;
+            height: 1px;
+            background-color: var(--neon-blue);
+            opacity: 0.3;
+            top: 0;
+            left: 0;
+            width: 100%;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .footer-logo {
+            font-size: 2.5rem;
+            color: var(--neon-blue);
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .footer-about {
+            max-width: 400px;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-contact {
+            margin-bottom: 2rem;
+        }
+        
+        .contact-item {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-icon {
+            width: 30px;
+            color: var(--neon-blue);
+            margin-right: 1rem;
+        }
+        
+        .footer-links-title {
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-links-title::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-links li a {
+            color: #dedede;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            position: relative;
+            padding-left: 1rem;
+        }
+        
+        .footer-links li a::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: var(--neon-purple);
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links li a:hover {
+            color: var(--neon-pink);
+            transform: translateX(5px);
+        }
+        
+        .footer-links li a:hover::before {
+            color: var(--neon-pink);
+        }
+        
+        .footer-bottom {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(222, 222, 222, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer-copyright {
+            color: rgba(222, 222, 222, 0.7);
+        }
+        
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .footer-social a {
+            color: #dedede;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .footer-social a:hover {
+            color: var(--neon-purple);
+            transform: translateY(-5px);
+        }
+        
+        /* Media Queries */
+        @media (max-width: 1200px) {
+            .team-row:nth-child(3) .team-member,
+            .team-row:nth-child(4) .team-member,
+            .team-row:nth-child(5) .team-member {
+                flex: 0 0 calc(50% - 2rem);
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 4rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .process-timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item:nth-child(odd) .timeline-content,
+            .timeline-item:nth-child(even) .timeline-content {
+                float: none;
+                width: calc(100% - 60px);
+                margin-left: 60px;
+                border-left: 3px solid var(--neon-blue);
+                border-right: none;
+            }
+            
+            .timeline-dot {
+                left: 20px;
+            }
+            
+            .event-info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .team-row:nth-child(2) .team-member,
+            .team-row:nth-child(3) .team-member,
+            .team-row:nth-child(4) .team-member,
+            .team-row:nth-child(5) .team-member {
+                flex: 0 0 100%;
+                margin: 0 0 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .footer-content > div {
+                width: 100%;
+                margin-bottom: 2rem;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1><i class="fas fa-code"></i> AMS Hackathon 2025</h1>
-        <p>Ready to hack? Enter the portal to begin your coding challenge.</p>
-        <a href="/login" class="btn btn-primary">
-            <i class="fas fa-sign-in-alt me-2"></i> Access Login Portal
-        </a>
-        <div class="mt-3">
-            <a href="/register" class="btn btn-secondary">
-                <i class="fas fa-user-plus me-2"></i> Register Now
-            </a>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-cube">
+            <div class="preloader-cube-inner">
+                <div class="preloader-side preloader-front"><i class="fas fa-cube"></i></div>
+                <div class="preloader-side preloader-back"><i class="fas fa-code"></i></div>
+                <div class="preloader-side preloader-right"><i class="fas fa-terminal"></i></div>
+                <div class="preloader-side preloader-left"><i class="fas fa-microchip"></i></div>
+                <div class="preloader-side preloader-top"><i class="fas fa-laptop-code"></i></div>
+                <div class="preloader-side preloader-bottom"><i class="fas fa-server"></i></div>
+            </div>
+        </div>
+        <div class="preloader-text">INITIALIZING CODEBLOCS 2025</div>
+        <div class="preloader-progress">
+            <div class="preloader-progress-bar"></div>
         </div>
     </div>
+    
+    <!-- Background Effects -->
+    <div class="particle-container" id="particle-container"></div>
+    <div class="binary-container" id="binary-container"></div>
+    <div class="circuit-board" id="circuit-board"></div>
+    <div class="scanlines"></div>
+    
+    <!-- Alert & Overlay -->
+    <div class="overlay" id="overlay"></div>
+    <div class="cyber-alert" id="event-alert">
+        <div class="cyber-corner corner-tl"></div>
+        <div class="cyber-corner corner-tr"></div>
+        <div class="cyber-corner corner-bl"></div>
+        <div class="cyber-corner corner-br"></div>
+        
+        <h3 class="cyber-alert-title">Event Status</h3>
+        <p class="cyber-alert-content">This event has not yet started. Currently, only registration is open. Please register your team to participate in CodeBlocs 2025.</p>
+        <button class="cyber-alert-close" id="close-alert">Acknowledge</button>
+    </div>
+    
+    <!-- Navbar -->
+    <nav class="cyber-navbar">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a class="navbar-brand" href="#"><i class="fas fa-cube"></i> CodeBlocs</a>
+                <div class="d-flex">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#process" class="nav-link">Process</a>
+                    <a href="#event-info" class="nav-link">Event Info</a>
+                    <a href="#team" class="nav-link">Team</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <!-- 3D Rotating Logo Cube -->
+                <div class="logo-container">
+                    <div class="logo-cube">
+                        <div class="logo-side logo-front">
+                            <img src="https://i.ibb.co/ffWc8Nz/bq.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <div class="logo-side logo-back">
+                            <img src="https://i.ibb.co/Mx7mbNTN/bb.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <div class="logo-side logo-right">
+                            <i class="fas fa-terminal"></i>
+                        </div>
+                        <div class="logo-side logo-left">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="logo-side logo-top">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="logo-side logo-bottom">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                
+                <!-- Animated Glitch Title -->
+                <h1 class="hero-title">
+                    CodeBlocs <span class="event-badge">2025</span>
+                    <div class="glitch-layers">
+                        <div class="glitch-layer">CodeBlocs</div>
+                        <div class="glitch-layer">CodeBlocs</div>
+                    </div>
+                </h1>
+                <div class="hero-subtitle">A TECHNICAL HACKATHON</div>
+                <p class="hero-event-info">Organized by Association of MCA Students, ITNU • March 29, 2025</p>
+            </div>
+        </div>
+        <a href="#process" class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </section>
+    
+    <!-- Process Section -->
+    <section class="process-section" id="process">
+        <div class="container">
+            <h2 class="section-title">The Journey</h2>
+            
+            <div class="process-timeline">
+                <div class="timeline-item" id="register">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Registration</h3>
+                        <p class="timeline-description">
+                            Begin your CodeBlocs journey by registering your team. Gather your brightest minds – teams of 4 members can participate. Share your skills, preferences, and prepare to tackle innovative challenges. Early bird registration offers special benefits!
+                        </p>
+                        <a href="/register" class="btn btn-cyber">Register Now</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Start Coding</h3>
+                        <p class="timeline-description">
+                            After selecting your domain, dive into an intense 24-hour coding marathon. Your team will strategize, implement, and refine solutions through a structured three-phase approach. Expert mentors will be available to guide you through technical challenges.
+                        </p>
+                        <a href="/login" class="btn btn-cyber" id="coding-btn">View Resources</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Results</h3>
+                        <p class="timeline-description">
+                            Present your project to our panel of industry experts and academic judges. Winners will be announced at the closing ceremony with exciting prizes including cash rewards, internship opportunities, tech gadgets, and recognition in the tech community.
+                        </p>
+                        <a href="#" class="btn btn-cyber" id="results-btn">Prize Details</a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Event Info Section -->
+    <section class="event-info-section" id="event-info">
+        <div class="container">
+            <h2 class="section-title">Event Information</h2>
+            
+            <div class="event-info-grid">
+                <div class="info-card">
+                    <div class="cyber-corner corner-tl"></div>
+                    <div class="cyber-corner corner-tr"></div>
+                    <div class="cyber-corner corner-bl"></div>
+                    <div class="cyber-corner corner-br"></div>
+                    
+                    <div class="info-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="info-title">Schedule</h3>
+                    <div class="info-content">
+                        <ul>
+                            <li><strong>Registration Opens:</strong> February 15, 2025</li>
+                            <li><strong>Registration Closes:</strong> March 20, 2025</li>
+                            <li><strong>Event Date:</strong> March 29, 2025</li>
+                            <li><strong>Duration:</strong> 24-hour Hackathon (8 AM - 8 AM)</li>
+                            <li><strong>Results Announcement:</strong> March 30, 2025, 4 PM</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="cyber-corner corner-tl"></div>
+                    <div class="cyber-corner corner-tr"></div>
+                    <div class="cyber-corner corner-bl"></div>
+                    <div class="cyber-corner corner-br"></div>
+                    
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="info-title">Venue</h3>
+                    <div class="info-content">
+                        <p>Institute of Technology</p>
+                        <p>Nirma University</p>
+                        <p>Ahmedabad, Gujarat, India</p>
+                        <p>The hackathon will take place in the MCA Department's Computer Labs (Blocks A & B), providing participants with high-speed internet, power supply, and comfortable working stations.</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="cyber-corner corner-tl"></div>
+                    <div class="cyber-corner corner-tr"></div>
+                    <div class="cyber-corner corner-bl"></div>
+                    <div class="cyber-corner corner-br"></div>
+                    
+                    <div class="info-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="info-title">Event Structure</h3>
+                    <div class="info-content">
+                        <p>CodeBlocs follows a unique three-phase structure:</p>
+                        <ul>
+                            <li><strong>Phase 1:</strong> Strategy Discussion (30 minutes) - Teams discuss implementation strategies and distribute tasks.</li>
+                            <li><strong>Phase 2:</strong> Module Implementation (3 hours) - Teams code their solutions and pass test cases.</li>
+                            <li><strong>Phase 3:</strong> UI Development (2 hours) - Teams develop user interfaces for their implemented modules.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="cyber-corner corner-tl"></div>
+                    <div class="cyber-corner corner-tr"></div>
+                    <div class="cyber-corner corner-bl"></div>
+                    <div class="cyber-corner corner-br"></div>
+                    
+                    <div class="info-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="info-title">Result</h3>
+                    <div class="info-content">
+                        <ul>
+                            <li><strong>1st Prize:</strong> ₹25,000 + Internship Opportunities</li>
+                            <li><strong>2nd Prize:</strong> ₹15,000 + Tech Gadgets</li>
+                            <li><strong>3rd Prize:</strong> ₹10,000 + Swag Kits</li>
+                            <li><strong>Special Categories:</strong> Best UI/UX, Most Innovative Solution, Best Implementation</li>
+                            <li>All participants receive certificates, refreshments, and exclusive hackathon merchandise.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Team Section -->
+    <section class="team-section" id="team">
+        <div class="container">
+            
+            <h2 class="section-title">Course Coordinator</h2>
+            
+            <div class="team-container">
+                <!-- Row 1: Course Coordinator -->
+                <div class="team-row">
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <i class="fas fa-user-tie avatar-icon"></i>
+                        </div>
+                        <h3 class="member-name">Dr. Deepika Shukla</h3>
+                        <p class="member-title">Course Coordinator</p>
+                        <p class="member-bio">
+                            A visionary educator and mentor, Dr. Deepika Shukla provides strategic guidance and academic oversight for the CodeBlocs hackathon. Her expertise in computer science and dedication to student development has been instrumental in shaping this event.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/deepika-shukla-1a28a4a2/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="section-title">Board Members</h4>
+                
+                <!-- Row 2: President & Vice President -->
+                <div class="team-row">
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/6cMNL4Hp/dhruv.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Dhruv Padariya</h3>
+                        <p class="member-title">President, AMS</p>
+                        <p class="member-bio">
+                            A visionary leader with exceptional organizational skills, Dhruv oversees all AMS initiatives with strategic insight and collaborative spirit. His proactive approach has elevated CodeBlocs to new heights.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/dhruv-padariya-1204a1272/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/99XzNFqC/ayush.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Ayush Goyal</h3>
+                        <p class="member-title">Vice President, AMS</p>
+                        <p class="member-bio">
+                            With sharp analytical skills and attention to detail, Ayush coordinates internal operations and ensures seamless execution of events. His innovative ideas have shaped CodeBlocs' unique structure.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/-ayush-goyal-/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row 3: Designer Head, Secretary, Archival Head -->
+                <div class="team-row">
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/spJnBhZr/dhiraj.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Dhiraj Singh Chandel</h3>
+                        <p class="member-title">Designer Head</p>
+                        <p class="member-bio">
+                            With an eye for aesthetics and user experience, Dhiraj leads the design team, crafting CodeBlocs' distinctive cyberpunk identity and ensuring a cohesive visual language across all platforms.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/dhiraj-singh-chandel-72007326b/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/KjpnKQ0v/divyesh.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Divyesh Bapodara</h3>
+                        <p class="member-title">Secretary</p>
+                        <p class="member-bio">
+                            A meticulous organizer with excellent communication skills, Divyesh maintains records, coordinates meetings, and ensures effective communication between teams. His attention to detail guarantees the smooth operation of all AMS activities.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/bapodara-divyesh-a893b8347/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/d4z9cStv/prexa.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Prexa Modi</h3>
+                        <p class="member-title">Archival Head</p>
+                        <p class="member-bio">
+                            A detail-oriented documentarian, Prexa preserves the history and achievements of AMS events. Her comprehensive archiving ensures CodeBlocs' innovations and successes are captured for future reference and improvement.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/prexa-modi-090502248/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row 4: Designer Head, Joint-Secretary, Archival Head -->
+                <div class="team-row">
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/FLSTLypY/diya.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Diya Mendpara</h3>
+                        <p class="member-title">Designer Head</p>
+                        <p class="member-bio">
+                            A creative powerhouse with modern design sensibilities, Diya collaborates with the design team to create compelling visuals for CodeBlocs. Her artistic touch enhances participant experience across digital and physical touchpoints.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/diya-mendpara-57471b329/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/VY1HbQb0/nishit.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Nishit Vadhia</h3>
+                        <p class="member-title">Joint-Secretary</p>
+                        <p class="member-bio">
+                            A skilled collaborator with strong interpersonal abilities, Nishit supports secretarial functions and facilitates cross-team coordination. His diplomatic approach ensures smooth communication between all stakeholders.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/nishit-vadhia-93266b273/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/VcBMC9Pt/sufi.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Sufiyaan Shaikh</h3>
+                        <p class="member-title">Archival Head</p>
+                        <p class="member-bio">
+                            A systematic curator with multimedia expertise, Sufiyaan documents and organizes AMS activities and achievements. His methodical approach ensures all CodeBlocs materials are properly archived for future reference.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/sufiyaan-shaikh-30907934b/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Row 5: Technical Heads, Treasurer -->
+                <div class="team-row">
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/DPRxWbQm/vansh.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Vansh Doshi</h3>
+                        <p class="member-title">Technical Head</p>
+                        <p class="member-bio">
+                            A technology enthusiast with deep expertise in modern frameworks, Vansh designs the technical challenges and infrastructure for CodeBlocs, ensuring reliability and innovation across all event platforms.
+                        </p>
+                        <div class="member-social">
+                            <a href="#" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/fV90W3dk/manthan.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Manthan Variya</h3>
+                        <p class="member-title">Technical Head</p>
+                        <p class="member-bio">
+                            A skilled developer with comprehensive technical knowledge, Manthan oversees technical implementations for CodeBlocs and guides the development team. His expertise ensures all digital systems function flawlessly during the event.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/manthan-variya-7b91a3255/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div class="team-member">
+                        <div class="cyber-corner corner-tl"></div>
+                        <div class="cyber-corner corner-tr"></div>
+                        <div class="cyber-corner corner-bl"></div>
+                        <div class="cyber-corner corner-br"></div>
+                        
+                        <div class="member-avatar">
+                            <div class="avatar-glow"></div>
+                            <img src="https://i.ibb.co/qLHStGsS/kamal.png" alt="CodeBlocs Logo" width="150">
+                        </div>
+                        <h3 class="member-name">Kamal Galsar</h3>
+                        <p class="member-title">Treasurer</p>
+                        <p class="member-bio">
+                            A meticulous planner with financial acumen, Kamal manages budgeting, sponsorships, and resource allocation, ensuring CodeBlocs delivers maximum value while maintaining operational efficiency.
+                        </p>
+                        <div class="member-social">
+                            <a href="https://www.linkedin.com/in/kamal-galsar-1b9258247/" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="cyber-footer">
+        <div class="footer-circuit-line"></div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <i class="fas fa-cube"></i> CodeBlocs
+                    </div>
+                    <p>The ultimate technical hackathon experience, organized by the Association of MCA Students at Institute of Technology, Nirma University.</p>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4 class="footer-links-title">Contact Us</h4>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>ams_itnu@nirmauni.ac.in</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>+91 8845 XXXXXX</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>Institute of Technology, Nirma University<br>Ahmedabad, Gujarat, India</div>
+                    </div>
+                </div>
+                
+                <div class="footer-links-container">
+                    <h4 class="footer-links-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#process">Process</a></li>
+                        <li><a href="#event-info">Event Info</a></li>
+                        <li><a href="#team">Team</a></li>
+                        <li><a href="#">Past Events</a></li>
+                        <li><a href="#">Gallery</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>Designed and developed by Association of MCA Students (AMS)</p>
+                    <p>&copy; 2025 Institute of Technology, Nirma University. All rights reserved.</p>
+                </div>
+                
+                <div class="footer-social">
+                    <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                    <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Preloader
+            setTimeout(function() {
+                document.getElementById('preloader').style.opacity = '0';
+                setTimeout(function() {
+                    document.getElementById('preloader').style.display = 'none';
+                }, 500);
+            }, 2500);
+            
+            // Handle alert for Start Coding and Results buttons
+            const overlay = document.getElementById('overlay');
+            const eventAlert = document.getElementById('event-alert');
+            const closeAlert = document.getElementById('close-alert');
+            const codingBtn = document.getElementById('coding-btn');
+            const resultsBtn = document.getElementById('results-btn');
+            
+            function showAlert() {
+                overlay.classList.add('show');
+                eventAlert.classList.add('show');
+            }
+            
+            function hideAlert() {
+                overlay.classList.remove('show');
+                eventAlert.classList.remove('show');
+            }
+            
+            codingBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showAlert();
+            });
+            
+            resultsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showAlert();
+            });
+            
+            closeAlert.addEventListener('click', hideAlert);
+            overlay.addEventListener('click', hideAlert);
+            
+            // Create circuit board effect
+            const circuitBoard = document.getElementById('circuit-board');
+            const nodesToAdd = 30;
+            const linesToAdd = 40;
+            
+            // Create circuit nodes
+            for (let i = 0; i < nodesToAdd; i++) {
+                const node = document.createElement('div');
+                node.className = 'circuit-node';
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                node.style.left = `${posX}%`;
+                node.style.top = `${posY}%`;
+                
+                // Random size
+                const size = Math.random() * 4 + 3;
+                node.style.width = `${size}px`;
+                node.style.height = `${size}px`;
+                
+                // Random animation delay
+                const delay = Math.random() * 5;
+                node.style.animationDelay = `${delay}s`;
+                
+                circuitBoard.appendChild(node);
+            }
+            
+            // Create circuit lines
+            for (let i = 0; i < linesToAdd; i++) {
+                const line = document.createElement('div');
+                line.className = 'circuit-line';
+                
+                // Random position and size
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const width = Math.random() * 100 + 50;
+                const height = 2;
+                
+                line.style.left = `${posX}%`;
+                line.style.top = `${posY}%`;
+                line.style.width = `${width}px`;
+                line.style.height = `${height}px`;
+                
+                // Random rotation
+                const rotation = Math.random() * 180;
+                line.style.transform = `rotate(${rotation}deg)`;
+                
+                circuitBoard.appendChild(line);
+            }
+            
+            // Create binary rain
+            const binaryContainer = document.getElementById('binary-container');
+            const binaryChars = '01';
+            const raindropsToAdd = 50;
+            
+            for (let i = 0; i < raindropsToAdd; i++) {
+                const raindrop = document.createElement('div');
+                raindrop.className = 'binary-rain';
+                
+                // Create random binary string
+                let binaryString = '';
+                const stringLength = Math.floor(Math.random() * 20) + 5;
+                
+                for (let j = 0; j < stringLength; j++) {
+                    binaryString += binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
+                }
+                
+                raindrop.textContent = binaryString;
+                
+                // Random position
+                const posX = Math.random() * 100;
+                raindrop.style.left = `${posX}%`;
+                
+                // Random speed
+                const duration = Math.random() * 15 + 5;
+                raindrop.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                const delay = Math.random() * 10;
+                raindrop.style.animationDelay = `-${delay}s`;
+                
+                binaryContainer.appendChild(raindrop);
+            }
+            
+            // Create floating particles
+            const particleContainer = document.getElementById('particle-container');
+            const particleCount = 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Random position
+                const posX = Math.random() * window.innerWidth;
+                const posY = Math.random() * window.innerHeight;
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                
+                // Random size
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random color
+                const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--success-color)'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.backgroundColor = color;
+                particle.style.boxShadow = `0 0 8px ${color}`;
+                
+                // Random animation duration
+                const duration = Math.random() * 10 + 8;
+                particle.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                const delay = Math.random() * 10;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particleContainer.appendChild(particle);
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    if (!this.classList.contains('btn-cyber')) {
+                        e.preventDefault();
+                        
+                        document.querySelector(this.getAttribute('href')).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Timeline items animation on scroll
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const teamMembers = document.querySelectorAll('.team-member');
+            
+            function checkScroll() {
+                timelineItems.forEach(item => {
+                    const itemTop = item.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (itemTop < windowHeight * 0.8) {
+                        item.classList.add('show');
+                    }
+                });
+                
+                teamMembers.forEach(member => {
+                    const memberTop = member.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (memberTop < windowHeight * 0.8) {
+                        member.classList.add('show');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', checkScroll);
+            // Initial check on page load
+            setTimeout(checkScroll, 4000);
+        });
+    </script>
 </body>
 </html>
