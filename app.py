@@ -257,8 +257,7 @@ def register_team():
         if team_member_1_email:
             try:
                 sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY')) # Initialize SendGrid client
-
-                from_email = "your-verified-sendgrid-email@example.com"  # Replace with your verified SendGrid email
+                from_email = os.environ.get('SENDGRID_FROM_EMAIL')
                 to_email = team_member_1_email
                 subject = "CodeBlocs Hackathon 2025 - Registration Successful!"
                 plain_text_content = f"Congratulations Team {team_name}!\n\n" \
