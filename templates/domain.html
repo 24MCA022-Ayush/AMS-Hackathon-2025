@@ -1,0 +1,2140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeBlocs Hackathon Domain Selection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-purple: #d442fe;
+            --neon-yellow: #ffd319;
+            --dark-bg: #0e1121;
+            --darker-bg: #090b17;
+            --card-bg: #14162b;
+            --success-color: #00ff9f;
+            --fail-color: #ff2a6d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: #dedede;
+            font-family: 'Rajdhani', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent),
+                linear-gradient(90deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Enhanced header styles */
+        .enhanced-header {
+            position: relative;
+            background-color: rgba(9, 11, 23, 0.8);
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .header-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        /* 3D circuit board background */
+        .circuit-board {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(9, 11, 23, 0.9) 0%, rgba(20, 22, 43, 0.8) 100%);
+        }
+        
+        .circuit-line {
+            position: absolute;
+            background-color: var(--neon-blue);
+            opacity: 0.3;
+        }
+        
+        .circuit-node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue);
+            opacity: 0.7;
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { 
+                opacity: 0.3;
+                box-shadow: 0 0 5px var(--neon-blue);
+            }
+            100% { 
+                opacity: 0.8;
+                box-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(5, 217, 232, 0.4);
+            }
+        }
+        
+        /* Binary rain effect */
+        .binary-rain {
+            position: absolute;
+            color: var(--neon-blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            opacity: 0.2;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.2;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(1000px);
+                opacity: 0;
+            }
+        }
+        
+        /* 3D floating computer elements */
+        .computer-element {
+            position: absolute;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 10px rgba(5, 217, 232, 0.5));
+            animation: float 10s ease-in-out infinite alternate;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg);
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px) rotateY(10deg) rotateX(5deg);
+            }
+            100% {
+                transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg);
+            }
+        }
+        
+        /* Title animations */
+        .title-container {
+            position: relative;
+            text-align: center;
+        }
+        
+        .glitch-title {
+            color: var(--neon-blue);
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue);
+            animation: textShadow 2s infinite;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        @keyframes textShadow {
+            0% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+            14% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+            15% {
+                text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue),
+                            -0.05em -0.05em 0 var(--neon-purple);
+            }
+            49% {
+                text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue),
+                            -0.05em -0.05em 0 var(--neon-purple);
+            }
+            50% {
+                text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue),
+                            0 -0.05em 0 var(--neon-purple);
+            }
+            99% {
+                text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue),
+                            0 -0.05em 0 var(--neon-purple);
+            }
+            100% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+        }
+        
+        .glitch-layers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .glitch-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateX(0);
+            mix-blend-mode: overlay;
+        }
+        
+        .glitch-layer:nth-child(1) {
+            left: 2px;
+            color: var(--neon-pink);
+            animation: glitchAnimation1 3s infinite linear alternate;
+        }
+        
+        .glitch-layer:nth-child(2) {
+            left: -2px;
+            color: var(--neon-blue);
+            animation: glitchAnimation2 4s infinite linear alternate;
+        }
+        
+        @keyframes glitchAnimation1 {
+            0% {
+                clip-path: inset(30% 0 40% 0);
+            }
+            20% {
+                clip-path: inset(80% 0 10% 0);
+            }
+            40% {
+                clip-path: inset(20% 0 58% 0);
+            }
+            60% {
+                clip-path: inset(80% 0 15% 0);
+            }
+            80% {
+                clip-path: inset(15% 0 78% 0);
+            }
+            100% {
+                clip-path: inset(60% 0 25% 0);
+            }
+        }
+        
+        @keyframes glitchAnimation2 {
+            0% {
+                clip-path: inset(10% 0 70% 0);
+            }
+            20% {
+                clip-path: inset(30% 0 50% 0);
+            }
+            40% {
+                clip-path: inset(50% 0 30% 0);
+            }
+            60% {
+                clip-path: inset(20% 0 70% 0);
+            }
+            80% {
+                clip-path: inset(80% 0 5% 0);
+            }
+            100% {
+                clip-path: inset(45% 0 40% 0);
+            }
+        }
+        
+        .subtitle {
+            color: var(--neon-purple);
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px var(--neon-purple);
+            display: inline-block;
+            background-color: rgba(9, 11, 23, 0.6);
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--neon-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .subtitle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 66, 254, 0.4), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        .hackers-typing {
+            font-family: 'Share Tech Mono', monospace;
+            margin-top: 1.5rem;
+            color: var(--success-color);
+            font-size: 1rem;
+            text-align: center;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+        
+        /* Logo animation */
+        .logo-container {
+            position: relative;
+            margin: 0 auto 1.5rem;
+            width: 150px;
+            height: 150px;
+            perspective: 800px;
+        }
+        
+        .logo-cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 20s infinite linear;
+        }
+        
+        @keyframes rotateCube {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+        
+        .logo-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--neon-blue);
+            background-color: rgba(9, 11, 23, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4) inset;
+        }
+        
+        .logo-front {
+            transform: translateZ(75px);
+        }
+        
+        .logo-back {
+            transform: rotateY(180deg) translateZ(75px);
+        }
+        
+        .logo-right {
+            transform: rotateY(90deg) translateZ(75px);
+        }
+        
+        .logo-left {
+            transform: rotateY(-90deg) translateZ(75px);
+        }
+        
+        .logo-top {
+            transform: rotateX(90deg) translateZ(75px);
+        }
+        
+        .logo-bottom {
+            transform: rotateX(-90deg) translateZ(75px);
+        }
+        
+        .logo-side i {
+            font-size: 48px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--neon-blue);
+            color: #ffffff;
+            margin-bottom: 2rem;
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: rgba(5, 217, 232, 0.1);
+            color: var(--neon-blue);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--neon-blue);
+            padding: 1rem 1.5rem;
+            position: relative;
+        }
+        
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--neon-blue);
+            filter: blur(1px);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-label {
+            color: var(--neon-blue);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control {
+            background-color: rgba(10, 10, 18, 0.7);
+            border: 1px solid rgba(5, 217, 232, 0.3);
+            color: #ffffff;
+            border-radius: 0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        .form-control:focus {
+            background-color: rgba(10, 10, 18, 0.9);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 0.25rem rgba(5, 217, 232, 0.25);
+            color: #ffffff;
+        }
+        
+        .form-select {
+            background-color: rgba(10, 10, 18, 0.7);
+            border: 1px solid rgba(5, 217, 232, 0.3);
+            color: #ffffff;
+            border-radius: 0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-select:focus {
+            background-color: rgba(10, 10, 18, 0.9);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 0.25rem rgba(5, 217, 232, 0.25);
+            color: #ffffff;
+        }
+        
+        .invalid-feedback {
+            color: var(--neon-pink);
+            font-size: 0.875rem;
+        }
+        
+        .btn-cyber {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cyber:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(5, 217, 232, 0.5);
+            color: #ffffff;
+        }
+        
+        .btn-cyber::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-cyber:hover::before {
+            left: 0;
+        }
+
+        .btn-cyber-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Cyber corners */
+        .cyber-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            z-index: 1;
+        }
+        
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--neon-blue);
+            border-left: 2px solid var(--neon-blue);
+        }
+        
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--neon-pink);
+            border-right: 2px solid var(--neon-pink);
+        }
+        
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--neon-purple);
+            border-left: 2px solid var(--neon-purple);
+        }
+        
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--neon-yellow);
+            border-right: 2px solid var(--neon-yellow);
+        }
+        
+        /* Particle animation */
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--neon-blue);
+            opacity: 0.6;
+            border-radius: 50%;
+            animation: float-particle linear infinite;
+        }
+        
+        @keyframes float-particle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+        
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+        
+        /* Multi-step form styling */
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Domain card styling */
+        .domain-card {
+            background-color: rgba(14, 17, 33, 0.8);
+            border: 1px solid var(--neon-purple);
+            padding: 1.5rem;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .domain-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(212, 66, 254, 0.3);
+            border-color: var(--neon-blue);
+        }
+        
+        .domain-card.selected {
+            border: 2px solid var(--success-color);
+            box-shadow: 0 0 20px rgba(0, 255, 159, 0.5);
+        }
+        
+        .domain-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+        }
+        
+        .domain-card h5 {
+            color: var(--neon-blue);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .domain-card-content {
+            flex-grow: 1;
+        }
+        
+        .domain-card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-badge {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .difficulty-low {
+            background-color: rgba(0, 255, 159, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .difficulty-medium {
+            background-color: rgba(255, 211, 25, 0.2);
+            color: var(--neon-yellow);
+            border: 1px solid var(--neon-yellow);
+        }
+
+        .difficulty-hard {
+            background-color: rgba(255, 42, 109, 0.2);
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
+        }
+
+        .difficulty-extreme {
+            background-color: rgba(255, 42, 109, 0.3);
+            color: var(--neon-pink);
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(255, 42, 109, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(255, 42, 109, 0.8); }
+        }
+        
+        /* Code input styling */
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+        
+        .code-input {
+            width: 4rem;
+            height: 4rem;
+            text-align: center;
+            font-size: 2rem;
+            font-family: 'Share Tech Mono', monospace;
+            border: 2px solid var(--neon-blue);
+            background-color: rgba(10, 10, 18, 0.7);
+            color: var(--neon-yellow);
+            box-shadow: 0 0 10px rgba(5, 217, 232, 0.3);
+        }
+        
+        .code-input:focus {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 15px rgba(255, 42, 109, 0.5);
+            outline: none;
+        }
+        
+        /* Lock animation */
+        .lock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 3rem 0;
+        }
+        
+        .lock-icon {
+            font-size: 5rem;
+            color: var(--neon-blue);
+            animation: lockPulse 2s infinite alternate;
+        }
+        
+        @keyframes lockPulse {
+            0% {
+                text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+                transform: scale(1);
+            }
+            100% {
+                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+                transform: scale(1.1);
+            }
+        }
+        
+        .lock-message {
+            font-size: 1.5rem;
+            color: var(--neon-purple);
+            margin-top: 1rem;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        /* Random domain animation */
+        .random-domain-container {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 2rem;
+            color: var(--neon-yellow);
+            text-align: center;
+            margin: 2rem 0;
+            height: 3rem;
+            overflow: hidden;
+        }
+        
+        .domain-shuffle {
+            display: inline-block;
+            animation: shuffle 2s steps(10);
+        }
+        
+        @keyframes shuffle {
+            0% {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Modal styling */
+        .cyber-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(9, 11, 23, 0.9);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .cyber-modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--neon-purple);
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 0 30px rgba(212, 66, 254, 0.3);
+        }
+        
+        .cyber-modal-header {
+            background-color: rgba(212, 66, 254, 0.1);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--neon-purple);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cyber-modal-title {
+            color: var(--neon-purple);
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        
+        .cyber-modal-close {
+            background: none;
+            border: none;
+            color: var(--neon-purple);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .cyber-modal-close:hover {
+            color: var(--neon-pink);
+            transform: rotate(90deg);
+        }
+        
+        .cyber-modal-body {
+            padding: 1.5rem;
+        }
+
+/* Captcha styling */
+.captcha-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.captcha-image {
+    width: 120px;
+    height: 40px;
+    border: 1px solid var(--neon-blue);
+    background-color: rgba(10, 10, 18, 0.7);
+    color: var(--neon-yellow);
+    text-align: center;
+    line-height: 40px;
+    font-family: 'Share Tech Mono', monospace;
+    user-select: none;
+}
+
+.captcha-input {
+    width: 80px;
+    margin-left: 1rem;
+}    
+    /* Final message animation */
+    .final-message {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--darker-bg);
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        overflow: hidden;
+    }
+    
+    .final-message h1 {
+        font-size: 2.5rem;
+        color: var(--neon-blue);
+        margin-bottom: 2rem;
+        animation: finalGlitch 3s infinite;
+    }
+
+    /* Final screen animations */
+    .final-circuit {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.2;
+        z-index: -1;
+    }
+
+    .final-floating-element {
+        position: absolute;
+        animation: finalFloat 15s ease-in-out infinite alternate;
+        opacity: 0.3;
+    }
+
+    @keyframes finalFloat {
+        0% {
+            transform: translateY(0) translateX(0) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-40px) translateX(20px) rotate(10deg);
+        }
+        100% {
+            transform: translateY(40px) translateX(-20px) rotate(-10deg);
+        }
+    }
+    
+    @keyframes finalGlitch {
+        0%, 100% {
+            opacity: 1;
+            transform: none;
+            color: var(--neon-blue);
+        }
+        33% {
+            color: var(--neon-pink);
+            transform: translateX(10px);
+        }
+        66% {
+            color: var(--neon-purple);
+            transform: translateX(-10px);
+        }
+    }
+    
+    /* Glitch reveal animation */
+    .glitch-reveal {
+        animation: glitchReveal 3s forwards;
+    }
+    
+    @keyframes glitchReveal {
+        0% {
+            clip-path: inset(0 0 0 0);
+            transform: none;
+            filter: none;
+        }
+        10% {
+            clip-path: inset(20% 0 20% 0);
+            transform: translateX(-20px);
+            filter: hue-rotate(90deg);
+        }
+        20% {
+            clip-path: inset(40% 0 40% 0);
+            transform: translateX(20px);
+            filter: hue-rotate(180deg);
+        }
+        30% {
+            clip-path: inset(60% 0 60% 0);
+            transform: translateX(-20px);
+            filter: hue-rotate(270deg);
+        }
+        40% {
+            clip-path: inset(80% 0 80% 0);
+            transform: translateX(20px);
+            filter: hue-rotate(360deg);
+        }
+        50%, 100% {
+            clip-path: inset(0 0 0 0);
+            transform: none;
+            filter: none;
+            opacity: 0;
+        }
+    }
+    
+    /* Loading animation */
+    .loading-dots {
+        display: inline-block;
+    }
+    
+    .loading-dots::after {
+        content: '';
+        animation: loadingDots 1.5s infinite;
+    }
+    
+    @keyframes loadingDots {
+        0% { content: ''; }
+        25% { content: '.'; }
+        50% { content: '..'; }
+        75% { content: '...'; }
+        100% { content: ''; }
+    }
+
+    /* Footer styling */
+    .cyber-footer {
+        margin-top: auto;
+        background-color: rgba(9, 11, 23, 0.9);
+        border-top: 1px solid var(--neon-blue);
+        padding: 2rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .footer-circuit-line {
+        position: absolute;
+        height: 1px;
+        background-color: var(--neon-blue);
+        opacity: 0.3;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-shadow: 0 0 10px var(--neon-blue);
+    }
+
+    .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .footer-logo {
+        font-size: 1.5rem;
+        color: var(--neon-blue);
+        font-weight: bold;
+        letter-spacing: 2px;
+        margin-bottom: 1rem;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .footer-links li a {
+        color: #dedede;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .footer-links li a:hover {
+        color: var(--neon-pink);
+    }
+
+    .footer-bottom {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(222, 222, 222, 0.1);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .footer-copyright {
+        color: rgba(222, 222, 222, 0.7);
+        font-size: 0.875rem;
+    }
+
+    .footer-social {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .footer-social a {
+        color: #dedede;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .footer-social a:hover {
+        color: var(--neon-purple);
+        transform: translateY(-3px);
+    }
+
+    @media (max-width: 768px) {
+        .footer-content,
+        .footer-bottom {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-social {
+            margin-top: 1rem;
+            justify-content: center;
+        }
+    }
+</style>
+</head>
+<body>
+    <!-- Particle container and scanlines -->
+    <div class="particle-container" id="particle-container"></div>
+    <div class="scanlines"></div>
+    <!-- Enhanced Header with 3D Animation -->
+<header class="enhanced-header">
+    <!-- 3D Background Effects -->
+    <div class="header-background">
+        <!-- Circuit board background -->
+        <div class="circuit-board" id="circuit-board"></div>
+        
+        <!-- Binary rain -->
+        <div id="binary-container"></div>
+        
+        <!-- 3D Computer elements -->
+        <div class="computer-element" style="top: 20%; left: 80%; animation-delay: -2s;">
+            <i class="fas fa-laptop" style="font-size: 48px; color: var(--neon-blue);"></i>
+        </div>
+        <div class="computer-element" style="top: 70%; left: 10%; animation-delay: -5s;">
+            <i class="fas fa-microchip" style="font-size: 36px; color: var(--neon-pink);"></i>
+        </div>
+        <div class="computer-element" style="top: 30%; left: 15%; animation-delay: -8s;">
+            <i class="fas fa-code" style="font-size: 42px; color: var(--neon-purple);"></i>
+        </div>
+        <div class="computer-element" style="top: 60%; left: 85%; animation-delay: -3s;">
+            <i class="fas fa-server" style="font-size: 40px; color: var(--neon-yellow);"></i>
+        </div>
+        <div class="computer-element" style="top: 15%; left: 40%; animation-delay: -7s;">
+            <i class="fas fa-database" style="font-size: 38px; color: var(--neon-blue);"></i>
+        </div>
+    </div>
+  
+    <div class="container">
+        <!-- 3D Rotating Logo Cube -->
+        <div class="logo-container">
+            <div class="logo-cube">
+                <div class="logo-side logo-front">
+                    <img src="https://i.ibb.co/ffWc8Nz/bq.png" alt="CodeBlocs Logo" width="150">
+                </div>
+                <div class="logo-side logo-back">
+                    <img src="https://i.ibb.co/Mx7mbNTN/bb.png" alt="CodeBlocs Logo" width="150">
+                </div>
+                <div class="logo-side logo-right">
+                    <i class="fas fa-terminal"></i>
+                </div>
+                <div class="logo-side logo-left">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="logo-side logo-top">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="logo-side logo-bottom">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+            </div>
+        </div>
+    
+        
+        <!-- Animated Glitch Title -->
+        <div class="title-container">
+            <h1 class="glitch-title">
+                CodeBlocs <span class="event-badge">2025</span>
+                <div class="glitch-layers">
+                    <div class="glitch-layer">CodeBlocs</div>
+                    <div class="glitch-layer">CodeBlocs</div>
+                </div>
+            </h1>
+            <div class="subtitle">DOMAIN SELECTION PORTAL</div>
+            <p class="event-info">Select your domain and begin the challenge</p>
+           
+            
+            <!-- Typing animation -->
+            <div class="hackers-typing" id="typing-text"></div>
+        </div>
+    </div>
+</header>
+<br>
+<br>
+
+<div class="container">
+    <!-- Multi-step form -->
+    <form id="domain-selection-form" class="needs-validation" novalidate>
+        <!-- Step 1: Team Authentication -->
+        <div class="form-step active" id="step1">
+            <div class="card">
+                <div class="cyber-corner corner-tl"></div>
+                <div class="cyber-corner corner-tr"></div>
+                <div class="cyber-corner corner-bl"></div>
+                <div class="cyber-corner corner-br"></div>
+                
+                <div class="card-header">
+                    <h3><i class="fas fa-users me-2"></i> Team Authentication</h3>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="team-name" class="form-label">Select Your Team</label>
+                            <select class="form-select" id="team-name" name="team-name" required>
+                                <option value="" selected disabled>Select your team</option>
+                                <option value="byte_busters">Byte Busters</option>
+                                <option value="code_crusaders">Code Crusaders</option>
+                                <option value="debug_demons">Debug Demons</option>
+                                <option value="syntax_savants">Syntax Savants</option>
+                                <option value="algo_avengers">Algo Avengers</option>
+                                <option value="tech_titans">Tech Titans</option>
+                                <option value="quantum_questers">Quantum Questers</option>
+                                <option value="binary_bosses">Binary Bosses</option>
+                            </select>
+                            <div class="invalid-feedback">Please select your team name.</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Enter Your 6-Digit Access Code</label>
+                            <div class="code-inputs">
+                                <input type="text" class="form-control code-input" maxlength="1" id="code-1" required>
+                                <input type="text" class="form-control code-input" maxlength="1" id="code-2" required>
+                                <input type="text" class="form-control code-input" maxlength="1" id="code-3" required>
+                                <input type="text" class="form-control code-input" maxlength="1" id="code-4" required>
+                                <input type="text" class="form-control code-input" maxlength="1" id="code-5" required>
+                                <input type="text" class="form-control code-input" maxlength="1" id="code-6" required>
+                            </div>
+                            <div class="invalid-feedback text-center mt-2">Please enter the complete 6-digit code.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="button" class="btn btn-cyber" id="verify-team">
+                            <i class="fas fa-key me-2"></i> Verify & Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Domain Assignment -->
+        <div class="form-step" id="step2">
+            <div class="card">
+                <div class="cyber-corner corner-tl"></div>
+                <div class="cyber-corner corner-tr"></div>
+                <div class="cyber-corner corner-bl"></div>
+                <div class="cyber-corner corner-br"></div>
+                
+                <div class="card-header">
+                    <h3><i class="fas fa-random me-2"></i> Domain Assignment</h3>
+                </div>
+                
+                <div class="card-body text-center">
+                    <h4 class="mb-4">Generating random domain for your team...</h4>
+                    
+                    <div class="random-domain-container">
+                        <span class="domain-shuffle" id="domain-name">CALCULATING</span>
+                    </div>
+                    
+                    <p class="my-4">The system is randomly selecting a domain for your team challenge.</p>
+                    
+                    <div class="progress mb-4" style="height: 30px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" id="domain-progress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-cyber" id="proceed-to-selection" disabled>
+                        <i class="fas fa-arrow-right me-2"></i> Proceed to Subdomain Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: Subdomain Selection -->
+        <div class="form-step" id="step3">
+            <div class="card">
+                <div class="cyber-corner corner-tl"></div>
+                <div class="cyber-corner corner-tr"></div>
+                <div class="cyber-corner corner-bl"></div>
+                <div class="cyber-corner corner-br"></div>
+                
+                <div class="card-header">
+                    <h3><i class="fas fa-sitemap me-2"></i> Subdomain Selection</h3>
+                </div>
+                
+                <div class="card-body">
+                    <h4 class="mb-3" id="assigned-domain-title">Your assigned domain: <span id="display-domain" style="color: var(--neon-yellow);">AI and Machine Learning</span></h4>
+                    <p class="mb-4">Select one of the following subdomains for your project:</p>
+                    
+                    <div class="row" id="subdomains-container">
+                        <!-- Subdomains will be dynamically inserted here -->
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-cyber" id="confirm-selection" disabled>
+                            <i class="fas fa-check-circle me-2"></i> Confirm Selection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 4: Confirmation -->
+        <div class="form-step" id="step4">
+            <div class="card">
+                <div class="cyber-corner corner-tl"></div>
+                <div class="cyber-corner corner-tr"></div>
+                <div class="cyber-corner corner-bl"></div>
+                <div class="cyber-corner corner-br"></div>
+                
+                <div class="card-header">
+                    <h3><i class="fas fa-lock me-2"></i> Final Confirmation</h3>
+                </div>
+                
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <h4>You are about to lock in your selection:</h4>
+                        <div class="mt-4 mb-4 p-3" style="background-color: rgba(9, 11, 23, 0.8); border: 1px solid var(--neon-purple);">
+                            <p class="mb-2">Team: <span id="confirm-team" style="color: var(--neon-yellow); font-weight: bold;"></span></p>
+                            <p class="mb-2">Domain: <span id="confirm-domain" style="color: var(--neon-yellow); font-weight: bold;"></span></p>
+                            <p>Subdomain: <span id="confirm-subdomain" style="color: var(--neon-yellow); font-weight: bold;"></span></p>
+                        </div>
+                        <p>Once confirmed, this selection cannot be changed.</p>
+                    </div>
+                    
+                    <!-- Captcha -->
+                    <div class="captcha-container">
+                        <div class="captcha-image" id="captcha-image"></div>
+                        <input type="text" class="form-control captcha-input" id="captcha-input" placeholder="Enter Captcha" required>
+                    </div>
+                    <div class="invalid-feedback text-center mt-2" id="captcha-error">Invalid captcha.</div>
+
+                    <div class="lock-container">
+                        <i class="fas fa-unlock-alt lock-icon" id="lock-icon"></i>
+                        <p class="lock-message" id="lock-message">Click the button below to lock in your selection</p>
+                    </div>
+                    
+                    <button type="button" class="btn btn-cyber" id="lock-selection">
+                        <i class="fas fa-lock me-2"></i> Lock Selection
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal for subdomain details -->
+<div class="cyber-modal" id="subdomain-modal">
+    <div class="cyber-modal-content">
+        <div class="cyber-modal-header">
+            <h5 class="cyber-modal-title" id="modal-title">Subdomain Details</h5>
+            <button type="button" class="cyber-modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cyber-modal-body" id="modal-body">
+            <!-- Content will be dynamically inserted here -->
+        </div>
+    </div>
+</div>
+
+<!-- Final message overlay -->
+<div class="final-message" id="final-message">
+    <!-- Background elements for final screen -->
+    <div class="final-circuit" id="final-circuit"></div>
+    
+    <div class="final-floating-element" style="top: 15%; left: 10%;">
+        <i class="fas fa-microchip" style="font-size: 48px; color: var(--neon-blue);"></i>
+    </div>
+    <div class="final-floating-element" style="top: 75%; left: 85%; animation-delay: -5s;">
+        <i class="fas fa-code" style="font-size: 52px; color: var(--neon-purple);"></i>
+    </div>
+    <div class="final-floating-element" style="top: 30%; left: 80%; animation-delay: -10s;">
+        <i class="fas fa-server" style="font-size: 56px; color: var(--neon-pink);"></i>
+    </div>
+    <div class="final-floating-element" style="top: 60%; left: 25%; animation-delay: -7s;">
+        <i class="fas fa-database" style="font-size: 44px; color: var(--neon-yellow);"></i>
+    </div>
+    
+    <h1>Next step is waiting for you in your registered email<span class="loading-dots"></span></h1>
+    <p style="color: var(--neon-purple); font-size: 1.2rem; max-width: 600px;">
+        Your domain selection has been confirmed. Check your email for project details and further instructions.
+    </p>
+    <br>
+    <button type="button" class="btn btn-cyber" id="verify-team">
+        <i class="fas fa-home me-2"></i> Go Back to Home
+    </button>
+
+</div>
+<br>
+<br>
+<br>
+<!-- Footer -->
+<footer class="cyber-footer">
+    <div class="footer-circuit-line"></div>
+    <div class="container">
+        <div class="footer-content">
+            <div>
+                <div class="footer-logo">
+                    <i class="fas fa-cube me-2"></i> CodeBlocs
+                </div>
+                <p>The ultimate technical hackathon experience.</p>
+            </div>
+            
+            <div>
+                <h5 style="color: var(--neon-blue);">Quick Links</h5>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-home me-1"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-info-circle me-1"></i> About</a></li>
+                    <li><a href="#"><i class="fas fa-trophy me-1"></i> Past Events</a></li>
+                    <li><a href="#"><i class="fas fa-envelope me-1"></i> Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="footer-copyright">
+                <p>Designed and developed by Association of MCA Students (AMS)</p>
+                <p>&copy; 2025 Institute of Technology, Nirma University. All rights reserved.</p>
+            </div>
+            
+            <div class="footer-social">
+                <a href="#" title="Email"><i class="fas fa-envelope"></i></a>
+                <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create circuit board effect
+        const circuitBoard = document.getElementById('circuit-board');
+        const nodesToAdd = 30;
+        const linesToAdd = 40;
+        
+        // Create circuit nodes
+        function createCircuitElements(container, nodesCount, linesCount) {
+            // Create circuit nodes
+            for (let i = 0; i < nodesCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'circuit-node';
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                node.style.left = `${posX}%`;
+                node.style.top = `${posY}%`;
+                
+                // Random size
+                const size = Math.random() * 4 + 3;
+                node.style.width = `${size}px`;
+                node.style.height = `${size}px`;
+                
+                // Random animation delay
+                const delay = Math.random() * 5;
+                node.style.animationDelay = `${delay}s`;
+                
+                container.appendChild(node);
+            }
+            
+            // Create circuit lines
+            for (let i = 0; i < linesCount; i++) {
+                const line = document.createElement('div');
+                line.className = 'circuit-line';
+                
+                // Random position and size
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const width = Math.random() * 100 + 50;
+                const height = 2;
+                
+                line.style.left = `${posX}%`;
+                line.style.top = `${posY}%`;
+                line.style.width = `${width}px`;
+                line.style.height = `${height}px`;
+                
+                // Random rotation
+                const rotation = Math.random() * 180;
+                line.style.transform = `rotate(${rotation}deg)`;
+                
+                container.appendChild(line);
+            }
+        }
+        
+        // Create circuit elements for main page
+        createCircuitElements(circuitBoard, nodesToAdd, linesToAdd);
+        
+        // Create circuit elements for final message
+        createCircuitElements(document.getElementById('final-circuit'), 40, 60);
+        
+        // Create binary rain
+        const binaryContainer = document.getElementById('binary-container');
+        const binaryChars = '01';
+        const raindropsToAdd = 50;
+        
+        for (let i = 0; i < raindropsToAdd; i++) {
+            const raindrop = document.createElement('div');
+            raindrop.className = 'binary-rain';
+            
+            // Create random binary string
+            let binaryString = '';
+            const stringLength = Math.floor(Math.random() * 20) + 5;
+            
+            for (let j = 0; j < stringLength; j++) {
+                binaryString += binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
+            }
+            
+            raindrop.textContent = binaryString;
+            
+            // Random position
+            const posX = Math.random() * 100;
+            raindrop.style.left = `${posX}%`;
+            
+            // Random speed
+            const duration = Math.random() * 15 + 5;
+            raindrop.style.animationDuration = `${duration}s`;
+            
+            // Random delay
+            const delay = Math.random() * 10;
+            raindrop.style.animationDelay = `-${delay}s`;
+            
+            binaryContainer.appendChild(raindrop);
+        }
+        
+        // Typing animation
+        const textElement = document.getElementById('typing-text');
+        const phrases = [
+            'Initializing domain selection protocols...',
+            'Scanning team database...',
+            'Preparing challenge domains...',
+            'System ready for domain assignment...'
+        ];
+        
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 100;
+        
+        function typeText() {
+            const currentPhrase = phrases[phraseIndex];
+            
+            if (isDeleting) {
+                // Deleting text
+                textElement.innerHTML = currentPhrase.substring(0, charIndex - 1) + '<span class="typing-cursor">|</span>';
+                charIndex--;
+                typingSpeed = 50;
+            } else {
+                // Typing text
+                textElement.innerHTML = currentPhrase.substring(0, charIndex + 1) + '<span class="typing-cursor">|</span>';
+                charIndex++;
+                typingSpeed = 100;
+            }
+            
+            // Move to next phrase or start deleting
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                // Pause at the end of the phrase
+                isDeleting = true;
+                typingSpeed = 1000;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+                typingSpeed = 500;
+            }
+            
+            setTimeout(typeText, typingSpeed);
+        }
+        
+        // Start the typing animation
+        setTimeout(typeText, 1000);
+        
+        // Create floating particles
+        const particleContainer = document.getElementById('particle-container');
+        const particleCount = 100;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random position
+            const posX = Math.random() * window.innerWidth;
+            const posY = Math.random() * window.innerHeight;
+            particle.style.left = `${posX}px`;
+            particle.style.top = `${posY}px`;
+            
+            // Random size
+            const size = Math.random() * 4 + 1;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // Random color
+            const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--success-color)'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.backgroundColor = color;
+            particle.style.boxShadow = `0 0 8px ${color}`;
+            
+            // Random animation duration
+            const duration = Math.random() * 10 + 8;
+            particle.style.animationDuration = `${duration}s`;
+            
+            // Random delay
+            const delay = Math.random() * 10;
+            particle.style.animationDelay = `${delay}s`;
+            
+            particleContainer.appendChild(particle);
+        }
+        
+        // Define domains and subdomains with detailed descriptions and difficulty levels
+        const domains = {
+            'AI and Machine Learning': [
+                {
+                    title: 'Natural Language Processing',
+                    description: 'Build a chatbot that can understand and respond to complex user queries using advanced NLP techniques.',
+                    longDescription: 'Create an intelligent conversational agent capable of understanding context, sentiment, and user intent. The system should handle multiple conversation threads, remember previous interactions, and provide accurate responses to domain-specific questions. Implement features like entity recognition, sentiment analysis, and language understanding.',
+                    difficulty: 'hard',
+                    requirements: ['Python', 'NLP libraries', 'Machine Learning expertise', 'API integration skills']
+                },
+                {
+                    title: 'Computer Vision',
+                    description: 'Develop an object recognition system that can identify and track objects in real-time video.',
+                    longDescription: 'Build a computer vision application that can detect, classify, and track multiple objects in real-time video streams. Your system should work with varying lighting conditions and camera angles, providing bounding boxes and labels for recognized objects. Implement features for handling occlusion and object persistence across frames.',
+                    difficulty: 'extreme',
+                    requirements: ['OpenCV', 'Deep Learning frameworks', 'Real-time processing', 'Video processing experience']
+                },
+                {
+                    title: 'Recommendation Systems',
+                    description: 'Create a content recommendation engine based on user behavior and preferences.',
+                    longDescription: 'Design and implement a recommendation system that analyzes user behavior, preferences, and interaction history to suggest relevant content. Your system should incorporate collaborative filtering, content-based filtering, and handle the cold-start problem for new users. Implement methods to evaluate recommendation quality and improve suggestions over time.',
+                    difficulty: 'medium',
+                    requirements: ['Data science skills', 'Algorithm design', 'Database knowledge', 'User experience focus']
+                },
+                {
+                    title: 'Healthcare Diagnostics',
+                    description: 'Design a diagnostic tool that predicts potential health risks based on patient data.',
+                    longDescription: 'Develop a healthcare application that analyzes patient medical records, diagnostic tests, and health metrics to predict potential health risks. The system should identify patterns that might indicate early warning signs of specific conditions, prioritize risks based on severity, and suggest preventive measures. Security and privacy of patient data should be a primary concern.',
+                    difficulty: 'low',
+                    requirements: ['Healthcare domain knowledge', 'Statistical analysis', 'Data visualization', 'Security protocols']
+                }
+            ],
+            'Cybersecurity': [
+                {
+                    title: 'Intrusion Detection',
+                    description: 'Build a system that can detect and alert about unusual network activities or potential security breaches.',
+                    longDescription: 'Create an advanced intrusion detection system capable of monitoring network traffic, system logs, and user behavior to identify potential security threats. The application should establish baselines for normal activity, detect anomalies, and classify threats based on severity. Implement real-time alerts and a dashboard for security administrators.',
+                    difficulty: 'extreme',
+                    requirements: ['Network security knowledge', 'Pattern recognition', 'Alert system design', 'Database management']
+                },
+                {
+                    title: 'Secure Communications',
+                    description: 'Develop an encrypted messaging system with end-to-end encryption and verification features.',
+                    longDescription: 'Design and implement a secure communication platform that ensures end-to-end encryption, message integrity, and user authentication. The system should include features like message expiration, secure file transfers, and verification of recipient identity. Your solution should be resistant to common attacks while maintaining usability.',
+                    difficulty: 'medium',
+                    requirements: ['Cryptography knowledge', 'Secure protocols', 'Key management', 'UI/UX design']
+                },
+                {
+                    title: 'Digital Forensics',
+                    description: 'Create a tool for analyzing and recovering digital evidence from compromised systems.',
+                    longDescription: 'Build a digital forensics application that can analyze compromised systems, extract evidence, and help reconstruct the timeline of an attack. Your tool should recover deleted files, analyze system logs, examine memory dumps, and document the chain of custody for all evidence. The solution should generate comprehensive reports for investigation purposes.',
+                    difficulty: 'hard',
+                    requirements: ['File system knowledge', 'Data recovery techniques', 'Log analysis', 'Reporting skills']
+                },
+                {
+                    title: 'Data Privacy Protection',
+                    description: 'Develop a system that helps organizations ensure compliance with data privacy regulations.',
+                    longDescription: 'Create a comprehensive data privacy solution that helps organizations identify, classify, and protect sensitive information across their systems. The application should audit data access patterns, enforce access controls, and ensure compliance with regulations like GDPR or HIPAA. Include features for data anonymization, consent management, and automated compliance reporting.',
+                    difficulty: 'low',
+                    requirements: ['Regulatory knowledge', 'Data classification', 'Access control systems', 'Audit trail design']
+                }
+            ],
+            'Web Development': [
+                {
+                    title: 'Progressive Web Apps',
+                    description: 'Build a progressive web application with offline capabilities and native-like features.',
+                    longDescription: 'Develop an advanced progressive web app that works seamlessly both online and offline. Your application should implement service workers for caching, provide push notifications, and support installation on home screens. The solution should deliver a native app-like experience with fast load times, responsive design, and accessibility across various devices.',
+                    difficulty: 'medium',
+                    requirements: ['JavaScript expertise', 'Service Workers', 'IndexedDB', 'Responsive design']
+                },
+                {
+                    title: 'Recommendation Systems',
+                    description: 'Create a content recommendation engine based on user behavior and preferences.',
+                    longDescription: 'Design and implement a recommendation system that analyzes user behavior, preferences, and interaction history to suggest relevant content. Your system should incorporate collaborative filtering, content-based filtering, and handle the cold-start problem for new users. Implement methods to evaluate recommendation quality and improve suggestions over time.',
+                    difficulty: 'medium',
+                    requirements: ['Data science skills', 'Algorithm design', 'Database knowledge', 'User experience focus']
+                },
+                {
+                    title: 'Content Management Systems',
+                    description: 'Develop a flexible and user-friendly content management system for digital content.',
+                    longDescription: 'Build a modern content management system that allows non-technical users to create, edit, and publish digital content with ease. Your CMS should include features like customizable workflows, content versioning, media library management, and dynamic templates. The solution should be extensible through plugins and offer robust content APIs.',
+                    difficulty: 'hard',
+                    requirements: ['Backend development', 'Database design', 'User permission systems', 'Content modeling']
+                },
+                {
+                    title: 'Educational Platforms',
+                    description: 'Create an interactive learning platform with progress tracking and assessment tools.',
+                    longDescription: 'Develop an educational web platform that delivers interactive learning experiences with multimedia content, quizzes, and assignments. Your solution should track learner progress, provide personalized learning paths, and include tools for educators to assess student performance. Include features like certificates, discussion forums, and content recommendation.',
+                    difficulty: 'low',
+                    requirements: ['LMS knowledge', 'Assessment design', 'Progress tracking', 'Educational UX']
+                }
+            ],
+            'Mobile Applications': [
+                {
+                    title: 'Cross-platform Development',
+                    description: 'Build a cross-platform mobile application that runs on both iOS and Android with a single codebase.',
+                    longDescription: 'Create a feature-rich mobile application that delivers a consistent experience across iOS and Android platforms while maintaining a single codebase. Your solution should leverage cross-platform frameworks while accessing native device features when necessary. The app should follow platform-specific design guidelines while sharing business logic and data management.',
+                    difficulty: 'medium',
+                    requirements: ['React Native/Flutter', 'Platform API knowledge', 'UI component design', 'Native module integration']
+                },
+                {
+                    title: 'AR/VR Applications',
+                    description: 'Develop a mobile AR application that overlays digital content on the real world.',
+                    longDescription: 'Design and implement an augmented reality mobile application that places interactive digital content in the real world using the device camera. Your solution should handle surface detection, lighting estimation, and object anchoring. Create engaging AR experiences that respond to user interaction and physical environment changes.',
+                    difficulty: 'extreme',
+                    requirements: ['ARKit/ARCore', '3D modeling', 'Spatial understanding', 'Performance optimization']
+                },
+                {
+                    title: 'Health & Fitness Tracking',
+                    description: 'Create a comprehensive health and fitness tracking application with personalized insights.',
+                    longDescription: 'Build a mobile health application that tracks user fitness activities, nutrition, sleep patterns, and other health metrics. Your solution should analyze collected data to provide personalized insights and recommendations. Include features like goal setting, progress visualization, achievement badges, and secure health data management.',
+                    difficulty: 'hard',
+                    requirements: ['Health data APIs', 'Sensor integration', 'Data visualization', 'Privacy-focused design']
+                },
+                {
+                    title: 'Mobile Gaming',
+                    description: 'Develop a casual mobile game with engaging gameplay and social features.',
+                    longDescription: 'Create an entertaining mobile game with intuitive controls, engaging gameplay mechanics, and social features. Your game should include character progression, achievements, leaderboards, and potentially multiplayer capabilities. Design effective monetization strategies that enhance rather than detract from the player experience.',
+                    difficulty: 'low',
+                    requirements: ['Game development', 'Animation skills', 'Game physics', 'Player engagement design']
+                }
+            ],
+            'Data Analytics': [
+                {
+                    title: 'Big Data Processing',
+                    description: 'Build a system for processing and analyzing large datasets using distributed computing.',
+                    longDescription: 'Develop a scalable data processing pipeline that can handle large datasets using distributed computing frameworks. Your solution should include data ingestion, transformation, storage, and analysis components. Implement batch and/or stream processing capabilities, optimized for performance and resource efficiency.',
+                    difficulty: 'extreme',
+                    requirements: ['Hadoop/Spark', 'Distributed systems', 'ETL pipelines', 'Performance optimization']
+                },
+                {
+                    title: 'Data Visualization',
+                    description: 'Create an interactive data visualization dashboard for complex business metrics.',
+                    longDescription: 'Design and implement an interactive data visualization dashboard that transforms complex data into actionable insights through intuitive charts, graphs, and other visual elements. Your solution should allow users to explore data through filtering, drill-down capabilities, and customizable views. Include features for sharing visualizations and exporting reports.',
+                    difficulty: 'medium',
+                    requirements: ['D3.js/Chart.js', 'Dashboard design', 'Interactive filters', 'Data storytelling']
+                },
+                {
+                    title: 'Predictive Modeling',
+                    description: 'Develop a predictive analytics solution for forecasting future trends and outcomes.',
+                    longDescription: 'Build a predictive analytics application that uses historical data and statistical algorithms to forecast future trends and outcomes. Your solution should include data preprocessing, model training, evaluation, and deployment components. Implement features for model monitoring, retraining, and explaining predictions to non-technical users.',
+                    difficulty: 'hard',
+                    requirements: ['Machine learning', 'Time series analysis', 'Model evaluation', 'Feature engineering']
+                },
+                {
+                    title: 'Financial Analysis',
+                    description: 'Create a tool for analyzing financial data and providing investment insights.',
+                    longDescription: 'Develop a financial analysis platform that processes market data, company financials, and economic indicators to provide investment insights. Your solution should include portfolio tracking, risk assessment, and performance benchmarking. Implement features for scenario analysis, alerts on market conditions, and custom reporting capabilities.',
+                    difficulty: 'low',
+                    requirements: ['Financial domain knowledge', 'Data analysis', 'Risk modeling', 'Reporting tools']
+                }
+            ],
+            'Blockchain Technology': [
+                {
+                    title: 'Smart Contracts',
+                    description: 'Build a system for creating, deploying, and managing smart contracts on a blockchain.',
+                    longDescription: 'Develop a platform for creating, testing, deploying, and managing smart contracts on blockchain networks. Your solution should include a development environment, audit tools for security vulnerabilities, and monitoring capabilities. Implement features for contract versioning, upgrades, and interaction with off-chain systems.',
+                    difficulty: 'extreme',
+                    requirements: ['Solidity/Rust', 'Blockchain architecture', 'Smart contract security', 'Web3 integration']
+                },
+                {
+                    title: 'Decentralized Applications',
+                    description: 'Create a decentralized application (DApp) with blockchain backend and user-friendly interface.',
+                    longDescription: 'Design and implement a full-featured decentralized application that leverages blockchain for its core functionality while providing a user-friendly interface. Your DApp should interact with smart contracts, manage user identities, and handle cryptocurrency transactions. Build a solution that delivers the benefits of decentralization without sacrificing usability.',
+                    difficulty: 'hard',
+                    requirements: ['Web3.js/ethers.js', 'Frontend frameworks', 'Wallet integration', 'Gas optimization']
+                },
+                {
+                    title: 'Supply Chain Tracking',
+                    description: 'Develop a blockchain-based supply chain tracking and verification system.',
+                    longDescription: 'Build a supply chain tracking system that uses blockchain to create an immutable record of product journey from origin to consumer. Your solution should include features for verified product information, chain of custody tracking, and authentication of ethical or sustainable sourcing claims. Implement tooling for stakeholders at different points in the supply chain.',
+                    difficulty: 'medium',
+                    requirements: ['Supply chain knowledge', 'Blockchain design', 'QR/RFID integration', 'Stakeholder interfaces']
+                },
+                {
+                    title: 'Secure Voting Systems',
+                    description: 'Create a blockchain-based voting system that ensures security, privacy, and transparency.',
+                    longDescription: 'Develop a secure electronic voting system that leverages blockchain to ensure vote integrity, voter privacy, and process transparency. Your solution should prevent double voting, protect voter anonymity, and allow for vote verification without revealing individual choices. Address challenges of accessibility, scalability, and security against various attack vectors.',
+                    difficulty: 'low',
+                    requirements: ['Cryptography', 'Zero-knowledge proofs', 'Consensus mechanisms', 'Security protocols']
+                }
+            ]
+        };
+        
+        // Form navigation variables
+        const steps = document.querySelectorAll('.form-step');
+        let currentStep = 0;
+        let selectedDomain = '';
+        let selectedSubdomain = '';
+        
+        // Step 1: Team Authentication
+        const codeInputs = document.querySelectorAll('.code-input');
+        const verifyTeamBtn = document.getElementById('verify-team');
+        
+        // Auto-navigate between code inputs
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0) {
+                    if (index > 0) {
+                        codeInputs[index - 1].focus();
+                    }
+                }
+            });
+        });
+        
+        // Verify team and proceed to Step 2
+        verifyTeamBtn.addEventListener('click', function() {
+            const teamName = document.getElementById('team-name').value;
+            let codeComplete = true;
+            
+            codeInputs.forEach(input => {
+                if (input.value.length === 0) {
+                    codeComplete = false;
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            if (teamName && codeComplete) {
+                // Go to Step 2: Domain Assignment
+                goToStep(1);
+                startDomainAssignment();
+            } else {
+                if (!teamName) {
+                    document.getElementById('team-name').classList.add('is-invalid');
+                }
+            }
+        });
+        
+        // Step 2: Domain Assignment
+        const domainProgress = document.getElementById('domain-progress');
+        const domainName = document.getElementById('domain-name');
+        const proceedToSelectionBtn = document.getElementById('proceed-to-selection');
+        
+        function startDomainAssignment() {
+            let progress = 0;
+            const domainKeys = Object.keys(domains);
+            let shuffleCount = 0;
+            
+            // Update progress bar
+            const progressInterval = setInterval(() => {
+                progress += 1;
+                domainProgress.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(progressInterval);
+                    proceedToSelectionBtn.disabled = false;
+                }
+            }, 50);
+            
+            // Shuffle domains to create animation effect
+            const shuffleInterval = setInterval(() => {
+                shuffleCount++;
+                const randomIndex = Math.floor(Math.random() * domainKeys.length);
+                domainName.textContent = domainKeys[randomIndex];
+                
+                if (shuffleCount >= 20) {
+                    clearInterval(shuffleInterval);
+                    // Select random domain
+                    const finalIndex = Math.floor(Math.random() * domainKeys.length);
+                    selectedDomain = domainKeys[finalIndex];
+                    domainName.textContent = selectedDomain;
+                    domainName.style.textShadow = '0 0 10px var(--neon-yellow)';
+                }
+            }, 100);
+        }
+        
+        // Proceed to subdomain selection
+        proceedToSelectionBtn.addEventListener('click', function() {
+            document.getElementById('display-domain').textContent = selectedDomain;
+            populateSubdomains(selectedDomain);
+            goToStep(2);
+        });
+        
+        // Step 3: Subdomain Selection
+        const subdomainsContainer = document.getElementById('subdomains-container');
+        const confirmSelectionBtn = document.getElementById('confirm-selection');
+        const subdomainModal = document.getElementById('subdomain-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalClose = document.getElementById('modal-close');
+        
+        function populateSubdomains(domain) {
+            subdomainsContainer.innerHTML = '';
+            
+            domains[domain].forEach(subdomain => {
+                const col = document.createElement('div');
+                col.className = 'col-md-6 mb-4';
+                
+                // Map difficulty to badge class
+                let difficultyClass = '';
+                let difficultyText = '';
+                
+                switch(subdomain.difficulty) {
+                    case 'low':
+                        difficultyClass = 'difficulty-low';
+                        difficultyText = 'Low';
+                        break;
+                    case 'medium':
+                        difficultyClass = 'difficulty-medium';
+                        difficultyText = 'Medium';
+                        break;
+                    case 'hard':
+                        difficultyClass = 'difficulty-hard';
+                        difficultyText = 'Hard';
+                        break;
+                    case 'extreme':
+                        difficultyClass = 'difficulty-extreme';
+                        difficultyText = 'Extreme';
+                        break;
+                }
+                
+                const card = document.createElement('div');
+                card.className = 'domain-card';
+                card.dataset.subdomain = subdomain.title;
+                
+                card.innerHTML = `
+                    <div class="domain-card-content">
+                        <h5>${subdomain.title}</h5>
+                        <p>${subdomain.description}</p>
+                    </div>
+                    <div class="domain-card-footer">
+                        <span class="difficulty-badge ${difficultyClass}">${difficultyText}</span>
+                        <button type="button" class="btn btn-cyber btn-cyber-sm know-more-btn" data-subdomain="${subdomain.title}">
+                            Know More
+                        </button>
+                    </div>
+                `;
+                
+                // Subdomain selection event
+                card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('know-more-btn')) {
+                        // Deselect all other cards
+                        document.querySelectorAll('.domain-card').forEach(card => {
+                            card.classList.remove('selected');
+                        });
+                        
+                        // Select this card
+                        this.classList.add('selected');
+                        selectedSubdomain = this.dataset.subdomain;
+                        
+                        // Enable confirm button
+                        confirmSelectionBtn.disabled = false;
+                    }
+                });
+                
+                col.appendChild(card);
+                subdomainsContainer.appendChild(col);
+            });
+            
+            // Add event listeners to "Know More" buttons
+            document.querySelectorAll('.know-more-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent card selection
+                    
+                    const subdomainTitle = this.dataset.subdomain;
+                    const subdomainData = domains[domain].find(s => s.title === subdomainTitle);
+                    
+                    // Populate modal
+                    modalTitle.textContent = subdomainTitle;
+                    
+                    let requirementsList = '';
+                    subdomainData.requirements.forEach(req => {
+                        requirementsList += `<li>${req}</li>`;
+                    });
+                    
+                    modalBody.innerHTML = `
+                        <p><strong>Difficulty:</strong> 
+                            <span class="difficulty-badge ${subdomainData.difficulty === 'low' ? 'difficulty-low' : 
+                                                           subdomainData.difficulty === 'medium' ? 'difficulty-medium' : 
+                                                           subdomainData.difficulty === 'hard' ? 'difficulty-hard' : 
+                                                           'difficulty-extreme'}">
+                                ${subdomainData.difficulty.charAt(0).toUpperCase() + subdomainData.difficulty.slice(1)}
+                            </span>
+                        </p>
+                        <h6 style="color: var(--neon-blue);">Challenge Description:</h6>
+                        <p>${subdomainData.longDescription}</p>
+                        <h6 style="color: var(--neon-blue);">Required Skills:</h6>
+                        <ul>${requirementsList}</ul>
+                    `;
+                    
+                    // Show modal
+                    subdomainModal.style.display = 'flex';
+                });
+            });
+        }
+        
+        // Modal close button
+        modalClose.addEventListener('click', function() {
+            subdomainModal.style.display = 'none';
+        });
+        
+        // Close modal on click outside content
+        subdomainModal.addEventListener('click', function(e) {
+            if (e.target === subdomainModal) {
+                subdomainModal.style.display = 'none';
+            }
+        });
+        
+        // Confirm selection and proceed to Step 4
+        confirmSelectionBtn.addEventListener('click', function() {
+            document.getElementById('confirm-team').textContent = document.getElementById('team-name').options[document.getElementById('team-name').selectedIndex].text;
+            document.getElementById('confirm-domain').textContent = selectedDomain;
+            document.getElementById('confirm-subdomain').textContent = selectedSubdomain;
+            
+            // Generate new captcha
+            generateCaptcha();
+            
+            goToStep(3);
+        });
+        
+        // Step 4: Captcha and Confirmation
+        const lockSelectionBtn = document.getElementById('lock-selection');
+        const lockIcon = document.getElementById('lock-icon');
+        const lockMessage = document.getElementById('lock-message');
+        const captchaText = document.getElementById('captcha-text');
+        const captchaInput = document.getElementById('captcha-input');
+        const refreshCaptcha = document.getElementById('refresh-captcha');
+        let currentCaptcha = '';
+        
+        // Generate random captcha
+        function generateCaptcha() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let captcha = '';
+            
+            for (let i = 0; i < 6; i++) {
+                captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            currentCaptcha = captcha;
+            document.getElementById('captcha-image').textContent = captcha;
+        }
+
+        // Generate captcha when reaching Step 4
+        // Add this to the confirm selection button click handler
+        confirmSelectionBtn.addEventListener('click', function() {
+            document.getElementById('confirm-team').textContent = document.getElementById('team-name').options[document.getElementById('team-name').selectedIndex].text;
+            document.getElementById('confirm-domain').textContent = selectedDomain;
+            document.getElementById('confirm-subdomain').textContent = selectedSubdomain;
+            
+            // Generate new captcha
+            generateCaptcha();
+            
+            goToStep(3);
+        });
+
+        // Verify captcha on lock selection
+        lockSelectionBtn.addEventListener('click', function() {
+            // Verify captcha
+            if (document.getElementById('captcha-input').value === currentCaptcha) {
+                // Hide error if shown
+                document.getElementById('captcha-error').style.display = 'none';
+                
+                // Animate lock
+                lockIcon.classList.remove('fa-unlock-alt');
+                lockIcon.classList.add('fa-lock');
+                lockMessage.textContent = 'Your selection has been locked!';
+                
+                // Disable lock button
+                this.disabled = true;
+                
+                // Show final message after delay
+                setTimeout(showFinalMessage, 3000);
+            } else {
+                // Show error
+                document.getElementById('captcha-error').style.display = 'block';
+                
+                // Generate new captcha
+                generateCaptcha();
+                
+                // Clear input
+                document.getElementById('captcha-input').value = '';
+                document.getElementById('captcha-input').focus();
+            }
+        });
+        // Final message display
+        function showFinalMessage() {
+            // Apply glitch effect to main content
+            document.querySelector('.container').classList.add('glitch-reveal');
+            document.querySelector('.enhanced-header').classList.add('glitch-reveal');
+            document.querySelector('.cyber-footer').classList.add('glitch-reveal');
+            
+            // Show final message
+            setTimeout(() => {
+                document.getElementById('final-message').style.display = 'flex';
+            }, 3000);
+        }
+        
+        // Helper function to navigate between steps
+        function goToStep(step) {
+            steps[currentStep].classList.remove('active');
+            steps[step].classList.add('active');
+            currentStep = step;
+            window.scrollTo(0, 0);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, session # Import redirect and session
 import os
+import secrets
 import subprocess
 import tempfile
 import uuid
@@ -169,6 +170,86 @@ def login_session():
 def logout_session():
     session.pop("team_name", None) # Clear session data
     return jsonify({"status": "success", "message": "Logged out"}), 200
+
+# Reference to the node where your teams data will be stored in Firebase
+teams_data_ref = db.reference('/Teams_Data')
+
+@app.route('/register')
+def registration_page():
+    return render_template('registration.html') # Serve registration page
+
+
+@app.route('/api/register_team', methods=['POST'])
+def register_team():
+    data = request.form # Use request.form to get form data
+
+    team_name = data.get('team-name')
+    num_members = data.get('num-members')
+    lead_email = data.get('lead-email')
+    lead_phone = data.get('lead-phone')
+    transaction_id = data.get('transaction-id')
+    payment_amount = data.get('payment-amount')
+
+    team_members = {}
+    for i in range(1, int(num_members) + 1): # Assuming num_members is correctly validated on frontend
+        member_data = {
+            "Name": data.get(f'member-name-{i}'),
+            "Email": data.get(f'member-email-{i}'),
+            "Phone_No": data.get(f'member-phone-{i}'),
+            "Course": data.get(f'member-course-{i}'),
+            "Roll_No": data.get(f'member-enrollment-{i}')
+        }
+        team_members[f'Team_Member_{i}'] = member_data
+
+    payment_info = {
+        "Trans_Id": transaction_id,
+        "Amount": payment_amount
+    }
+
+    try:
+        # --- Firebase Authentication ---
+        email = f"{team_name}@hackathon.ams"
+        password = team_name # As per your request - consider stronger passwords in production
+
+        try:
+            user = auth.create_user(
+                email=email,
+                password=password,
+                display_name=team_name # Optional - set display name as team name
+            )
+            firebase_uid = user.uid
+            print(f"Successfully created new user: {firebase_uid}")
+        except auth.EmailAlreadyExistsError:
+            return jsonify({"status": "error", "message": "Team name already taken. Please choose a different team name."}), 400
+        except Exception as auth_error:
+            print(f"Firebase Authentication Error: {auth_error}")
+            return jsonify({"status": "error", "message": f"Authentication failed: {str(auth_error)}"}), 500
+
+        # Generate a 12-digit alphanumeric secret key  <--- START OF ADDED CODE BLOCK
+        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        secret_key = ''.join(secrets.choice(alphabet) for i in range(12))
+
+        print(f"Generated Secret Key for Team '{team_name}': {secret_key}") # Log the generated key for debugging (remove in production)
+
+        # --- Firebase Realtime Database ---
+        team_data_payload = {
+            "Team_Name": team_name,
+            "Secret_Key": secret_key, # Store the generated secret key - consider security implications
+            "Domain": None, # Set default values as per your example
+            "Title": None,
+            "Domain_Process": False,
+            "Payment_Info": payment_info,
+            **team_members # Merge team members dictionary into the payload
+        }
+
+        teams_data_ref.child(firebase_uid).set(team_data_payload) # Use Firebase UID as key
+
+        return jsonify({"status": "success", "message": "Team registered successfully!"}), 200
+
+    except Exception as db_error:
+        print(f"Firebase Database Error: {db_error}")
+        return jsonify({"status": "error", "message": f"Database error: {str(db_error)}"}), 500
+
 
 @app.route('/')
 def home_page():
