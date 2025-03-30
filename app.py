@@ -261,10 +261,6 @@ def login_page():
         return redirect("/hackathon") # Redirect to hackathon page
     return render_template('login.html') # Serve login page at /login if not logged in
 
-@app.route('/register')
-def registration_page():
-    return render_template('registration.html') # Serve registration page
-
 @app.route('/hackathon')
 @login_required # Protect hackathon page
 def hackathon_page():
