@@ -1,0 +1,50 @@
+{
+    "Teams_Data": 
+    {
+      "POPvDmvgM6MJGzb1EcjRAEvqxh73": 
+      {
+        "Team_Name": "Team Atharva",
+        "Secret_Key": "strong_password",
+        "Domain": null,
+        "Title": null,
+        "Domain_Process": false,
+        "Payment_Info": 
+        {
+          "Trans_Id": "TRANS9876",
+          "Amount": "75.50"
+        },
+        "Team_Member_1": 
+        {
+          "Name": "Alice Johnson",
+          "Email": "alice.j@example.com",
+          "Phone_No": "555-123-4567",
+          "Course": "Data Analytics",
+          "Roll_No": "24MCA001"
+        },
+        "Team_Member_2": 
+        {
+          "Name": "Bob Williams",
+          "Email": "bob.w@example.com",
+          "Phone_No": "555-987-6543",
+          "Course": "Cloud Computing",
+          "Roll_No": "24MCA007"
+        },
+        "Team_Member_3": 
+        {
+          "Name": "Cathy Davis",
+          "Email": "cathy.d@example.com",
+          "Phone_No": "555-111-2222",
+          "Course": "Cyber Security",
+          "Roll_No": "24MCA017"
+        },
+        "Team_Member_4": 
+        {
+          "Name": "David Miller",
+          "Email": "david.m@example.com",
+          "Phone_No": "555-333-4444",
+          "Course": "Web Development",
+          "Roll_No": "24MCA022"
+        }
+      }
+    }
+  }

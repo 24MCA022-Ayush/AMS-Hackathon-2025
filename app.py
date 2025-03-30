@@ -151,7 +151,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("team_name") is None:
-            return redirect("/") # Redirect to login if not logged in
+            return redirect("/login") # Redirect to login if not logged in
         return f(*args, **kwargs)
     return decorated_function
 
@@ -170,12 +170,15 @@ def logout_session():
     session.pop("team_name", None) # Clear session data
     return jsonify({"status": "success", "message": "Logged out"}), 200
 
-
 @app.route('/')
+def home_page():
+    return render_template('home.html') # Serve home page at root
+
+@app.route('/login')
 def login_page():
     if session.get("team_name"): # If user is already logged in
         return redirect("/hackathon") # Redirect to hackathon page
-    return render_template('index.html') # Serve login page at root if not logged in
+    return render_template('login.html') # Serve login page at /login if not logged in
 
 @app.route('/hackathon')
 @login_required # Protect hackathon page

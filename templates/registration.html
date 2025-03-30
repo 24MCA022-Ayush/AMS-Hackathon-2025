@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeBlocs Hackathon Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+        
+        :root {
+            --neon-pink: #ff2a6d;
+            --neon-blue: #05d9e8;
+            --neon-purple: #d442fe;
+            --neon-yellow: #ffd319;
+            --dark-bg: #0e1121;
+            --darker-bg: #090b17;
+            --card-bg: #14162b;
+            --success-color: #00ff9f;
+            --fail-color: #ff2a6d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--dark-bg);
+            color: #dedede;
+            font-family: 'Rajdhani', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+        
+        /* Grid background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent),
+                linear-gradient(90deg, transparent 98%, rgba(5, 217, 232, 0.2) 99%, transparent);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Enhanced header styles */
+        .enhanced-header {
+            position: relative;
+            background-color: rgba(9, 11, 23, 0.8);
+            padding: 4rem 0;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .header-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        /* 3D circuit board background */
+        .circuit-board {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(9, 11, 23, 0.9) 0%, rgba(20, 22, 43, 0.8) 100%);
+        }
+        
+        .circuit-line {
+            position: absolute;
+            background-color: var(--neon-blue);
+            opacity: 0.3;
+        }
+        
+        .circuit-node {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--neon-blue);
+            opacity: 0.7;
+            animation: pulse 3s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% { 
+                opacity: 0.3;
+                box-shadow: 0 0 5px var(--neon-blue);
+            }
+            100% { 
+                opacity: 0.8;
+                box-shadow: 0 0 15px var(--neon-blue), 0 0 30px rgba(5, 217, 232, 0.4);
+            }
+        }
+        
+        /* Binary rain effect */
+        .binary-rain {
+            position: absolute;
+            color: var(--neon-blue);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            opacity: 0.2;
+            animation: fall linear infinite;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.2;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(1000px);
+                opacity: 0;
+            }
+        }
+        
+        /* 3D floating computer elements */
+        .computer-element {
+            position: absolute;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 10px rgba(5, 217, 232, 0.5));
+            animation: float 10s ease-in-out infinite alternate;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg);
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px) rotateY(10deg) rotateX(5deg);
+            }
+            100% {
+                transform: translateY(0) translateX(0) rotateY(0deg) rotateX(0deg);
+            }
+        }
+        
+        /* Title animations */
+        .title-container {
+            position: relative;
+            text-align: center;
+        }
+        
+        .glitch-title {
+            color: var(--neon-blue);
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue);
+            animation: textShadow 2s infinite;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        @keyframes textShadow {
+            0% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+            14% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+            15% {
+                text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue),
+                            -0.05em -0.05em 0 var(--neon-purple);
+            }
+            49% {
+                text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue),
+                            -0.05em -0.05em 0 var(--neon-purple);
+            }
+            50% {
+                text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue),
+                            0 -0.05em 0 var(--neon-purple);
+            }
+            99% {
+                text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue),
+                            0 -0.05em 0 var(--neon-purple);
+            }
+            100% {
+                text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue),
+                            -0.025em 0.05em 0 var(--neon-purple);
+            }
+        }
+        
+        .glitch-layers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .glitch-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: translateX(0);
+            mix-blend-mode: overlay;
+        }
+        
+        .glitch-layer:nth-child(1) {
+            left: 2px;
+            color: var(--neon-pink);
+            animation: glitchAnimation1 3s infinite linear alternate;
+        }
+        
+        .glitch-layer:nth-child(2) {
+            left: -2px;
+            color: var(--neon-blue);
+            animation: glitchAnimation2 4s infinite linear alternate;
+        }
+        
+        @keyframes glitchAnimation1 {
+            0% {
+                clip-path: inset(30% 0 40% 0);
+            }
+            20% {
+                clip-path: inset(80% 0 10% 0);
+            }
+            40% {
+                clip-path: inset(20% 0 58% 0);
+            }
+            60% {
+                clip-path: inset(80% 0 15% 0);
+            }
+            80% {
+                clip-path: inset(15% 0 78% 0);
+            }
+            100% {
+                clip-path: inset(60% 0 25% 0);
+            }
+        }
+        
+        @keyframes glitchAnimation2 {
+            0% {
+                clip-path: inset(10% 0 70% 0);
+            }
+            20% {
+                clip-path: inset(30% 0 50% 0);
+            }
+            40% {
+                clip-path: inset(50% 0 30% 0);
+            }
+            60% {
+                clip-path: inset(20% 0 70% 0);
+            }
+            80% {
+                clip-path: inset(80% 0 5% 0);
+            }
+            100% {
+                clip-path: inset(45% 0 40% 0);
+            }
+        }
+        
+        .subtitle {
+            color: var(--neon-purple);
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px var(--neon-purple);
+            display: inline-block;
+            background-color: rgba(9, 11, 23, 0.6);
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--neon-purple);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .subtitle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 66, 254, 0.4), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        .event-info {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+        }
+        
+        .hackers-typing {
+            font-family: 'Share Tech Mono', monospace;
+            margin-top: 1.5rem;
+            color: var(--success-color);
+            font-size: 1rem;
+            text-align: center;
+            height: 1.5rem;
+            overflow: hidden;
+        }
+        
+        /* Logo animation */
+        .logo-container {
+            position: relative;
+            margin: 0 auto 1.5rem;
+            width: 150px;
+            height: 150px;
+            perspective: 800px;
+        }
+        
+        .logo-cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 20s infinite linear;
+        }
+        
+        @keyframes rotateCube {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+        
+        .logo-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--neon-blue);
+            background-color: rgba(9, 11, 23, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.4) inset;
+        }
+        
+        .logo-front {
+            transform: translateZ(75px);
+        }
+        
+        .logo-back {
+            transform: rotateY(180deg) translateZ(75px);
+        }
+        
+        .logo-right {
+            transform: rotateY(90deg) translateZ(75px);
+        }
+        
+        .logo-left {
+            transform: rotateY(-90deg) translateZ(75px);
+        }
+        
+        .logo-top {
+            transform: rotateX(90deg) translateZ(75px);
+        }
+        
+        .logo-bottom {
+            transform: rotateX(-90deg) translateZ(75px);
+        }
+        
+        .logo-side img {
+            width: 80%;
+            height: auto;
+            object-fit: contain;
+        }
+        
+        .logo-side i {
+            font-size: 48px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        /* Badge animation */
+        .event-badge {
+            display: inline-block;
+            background-color: var(--darker-bg);
+            color: var(--neon-pink);
+            padding: 0.3rem 0.8rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-left: 1rem;
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+            position: relative;
+            animation: badgePulse 3s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 42, 109, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 42, 109, 0.6);
+            }
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .glitch {
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            14% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            15% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            49% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            50% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            99% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            100% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--neon-blue);
+            color: #ffffff;
+            margin-bottom: 2rem;
+            border-radius: 0;
+            position: relative;
+        }
+        
+        .card-header {
+            background-color: rgba(5, 217, 232, 0.1);
+            color: var(--neon-blue);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--neon-blue);
+            padding: 1rem 1.5rem;
+            position: relative;
+        }
+        
+        .card-header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--neon-blue);
+            filter: blur(1px);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .form-label {
+            color: var(--neon-blue);
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            background-color: rgba(10, 10, 18, 0.7);
+            border: 1px solid rgba(5, 217, 232, 0.3);
+            color: #ffffff;
+            border-radius: 0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(10, 10, 18, 0.9);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 0 0.25rem rgba(5, 217, 232, 0.25);
+            color: #ffffff;
+        }
+        
+        .form-text {
+            color: rgba(222, 222, 222, 0.7);
+            font-size: 0.875rem;
+        }
+        
+        .invalid-feedback {
+            color: var(--neon-pink);
+            font-size: 0.875rem;
+        }
+        
+        .btn-cyber {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cyber:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(5, 217, 232, 0.5);
+            color: #ffffff;
+        }
+        
+        .btn-cyber::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+        
+        .btn-cyber:hover::before {
+            left: 0;
+        }
+        
+        /* Cyber corners */
+        .cyber-corner {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+        }
+        
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--neon-blue);
+            border-left: 2px solid var(--neon-blue);
+        }
+        
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--neon-pink);
+            border-right: 2px solid var(--neon-pink);
+        }
+        
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--neon-purple);
+            border-left: 2px solid var(--neon-purple);
+        }
+        
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--neon-yellow);
+            border-right: 2px solid var(--neon-yellow);
+        }
+        
+        /* Phase timeline */
+        .timeline {
+            position: relative;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            transform: translateX(-50%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: calc(50% + 20px);
+        }
+        
+        .timeline-item:nth-child(even) {
+            padding-left: 0;
+            padding-right: calc(50% + 20px);
+            text-align: right;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background-color: var(--neon-blue);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .timeline-item:nth-child(2) .timeline-dot {
+            background-color: var(--neon-purple);
+            box-shadow: 0 0 10px var(--neon-purple);
+        }
+        
+        .timeline-item:nth-child(3) .timeline-dot {
+            background-color: var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+        
+        .timeline-content {
+            background-color: rgba(20, 22, 43, 0.7);
+            padding: 1.5rem;
+            border-left: 3px solid var(--neon-blue);
+            position: relative;
+        }
+        
+        .timeline-item:nth-child(2) .timeline-content {
+            border-left-color: var(--neon-purple);
+        }
+        
+        .timeline-item:nth-child(3) .timeline-content {
+            border-left-color: var(--neon-pink);
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            border-left: none;
+            border-right: 3px solid var(--neon-blue);
+        }
+        
+        .timeline-item:nth-child(even):nth-child(2) .timeline-content {
+            border-right-color: var(--neon-purple);
+        }
+        
+        .timeline-item:nth-child(even):nth-child(3) .timeline-content {
+            border-right-color: var(--neon-pink);
+        }
+        
+        .timeline-title {
+            color: var(--neon-blue);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .timeline-item:nth-child(2) .timeline-title {
+            color: var(--neon-purple);
+        }
+        
+        .timeline-item:nth-child(3) .timeline-title {
+            color: var(--neon-pink);
+        }
+        
+        /* QR code styling */
+        .qr-code-container {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 0 auto;
+            text-align: center;
+            border: 3px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(5, 217, 232, 0.5);
+        }
+        
+        .qr-code {
+            width: 150px;
+            height: 150px;
+        }
+        
+        /* Form groups styling */
+        .team-member {
+            background-color: rgba(10, 10, 18, 0.5);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--neon-blue);
+            position: relative;
+        }
+        
+        .team-member h5 {
+            color: var(--neon-purple);
+            margin-bottom: 1rem;
+        }
+        
+        /* Terms and conditions */
+        .terms-container {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: rgba(10, 10, 18, 0.5);
+            padding: 1rem;
+            border: 1px solid rgba(5, 217, 232, 0.3);
+            margin-bottom: 1rem;
+        }
+        
+        .terms-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terms-container::-webkit-scrollbar-track {
+            background: rgba(10, 10, 18, 0.5);
+        }
+        
+        .terms-container::-webkit-scrollbar-thumb {
+            background-color: var(--neon-blue);
+            border-radius: 4px;
+        }
+        
+        /* Form validation */
+        .was-validated .form-control:invalid {
+            border-color: var(--neon-pink);
+            background-image: none;
+        }
+        
+        .was-validated .form-control:valid {
+            border-color: var(--success-color);
+            background-image: none;
+        }
+        
+        /* Particle animation */
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--neon-blue);
+            opacity: 0.6;
+            border-radius: 50%;
+            animation: float-particle linear infinite;
+        }
+        
+        @keyframes float-particle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+        
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 0, 0, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+        
+        /* Summary panel */
+        .summary-panel {
+            position: fixed;
+            top: 50%;
+            right: -380px;
+            width: 350px;
+            background-color: var(--card-bg);
+            border-left: 3px solid var(--neon-blue);
+            padding: 1.5rem;
+            transform: translateY(-50%);
+            transition: right 0.5s ease;
+            z-index: 1000;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .summary-panel.show {
+            right: 0;
+        }
+        
+        .summary-toggle {
+            position: absolute;
+            left: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--neon-blue);
+            color: var(--darker-bg);
+            border: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 767.98px) {
+            .timeline::before {
+                left: 30px;
+            }
+            
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                padding-left: 70px;
+                padding-right: 0;
+                text-align: left;
+            }
+            
+            .timeline-dot {
+                left: 30px;
+            }
+            
+            .timeline-item:nth-child(even) .timeline-content {
+                border-right: none;
+                border-left: 3px solid var(--neon-purple);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle container and scanlines -->
+    <div class="particle-container" id="particle-container"></div>
+    <div class="scanlines"></div>
+    
+    <!-- Enhanced Header with 3D Animation -->
+    <header class="enhanced-header">
+        <!-- 3D Background Effects -->
+         <!-- 3D Background Effects -->
+        <div class="header-background">
+          <!-- Circuit board background -->
+          <div class="circuit-board" id="circuit-board"></div>
+          
+          <!-- Binary rain -->
+          <div id="binary-container"></div>
+          
+          <!-- 3D Computer elements -->
+          <div class="computer-element" style="top: 20%; left: 80%; animation-delay: -2s;">
+              <i class="fas fa-laptop" style="font-size: 48px; color: var(--neon-blue);"></i>
+          </div>
+          <div class="computer-element" style="top: 70%; left: 10%; animation-delay: -5s;">
+              <i class="fas fa-microchip" style="font-size: 36px; color: var(--neon-pink);"></i>
+          </div>
+          <div class="computer-element" style="top: 30%; left: 15%; animation-delay: -8s;">
+              <i class="fas fa-code" style="font-size: 42px; color: var(--neon-purple);"></i>
+          </div>
+          <div class="computer-element" style="top: 60%; left: 85%; animation-delay: -3s;">
+              <i class="fas fa-server" style="font-size: 40px; color: var(--neon-yellow);"></i>
+          </div>
+          <div class="computer-element" style="top: 15%; left: 40%; animation-delay: -7s;">
+              <i class="fas fa-database" style="font-size: 38px; color: var(--neon-blue);"></i>
+          </div>
+      </div>
+      
+      <div class="container">
+          <!-- 3D Rotating Logo Cube -->
+          <div class="logo-container">
+              <div class="logo-cube">
+                  <div class="logo-side logo-front">
+                      <img src="https://i.ibb.co/ffWc8Nz/bq.png" alt="CodeBlocs Logo">
+                  </div>
+                  <div class="logo-side logo-back">
+                    <img src="https://i.ibb.co/Mx7mbNTN/bb.png" alt="CodeBlocs Logo">
+                  </div>
+                  <div class="logo-side logo-right">
+                      <i class="fas fa-laptop-code"></i>
+                  </div>
+                  <div class="logo-side logo-left">
+                      <i class="fas fa-terminal"></i>
+                  </div>
+                  <div class="logo-side logo-top">
+                      <i class="fas fa-microchip"></i>
+                  </div>
+                  <div class="logo-side logo-bottom">
+                      <i class="fas fa-cogs"></i>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Animated Glitch Title -->
+          <div class="title-container">
+              <h1 class="glitch-title">
+                  CodeBlocs <span class="event-badge">2025</span>
+                  <div class="glitch-layers">
+                      <div class="glitch-layer">CodeBlocs</div>
+                      <div class="glitch-layer">CodeBlocs</div>
+                  </div>
+              </h1>
+              <div class="subtitle">&lt;/&gt; A TECHNICAL HACKATHON</div>
+              <p class="event-info">Organized by Association of MCA Students, ITNU • March 29, 2025</p>
+              
+              <!-- Typing animation -->
+              <div class="hackers-typing" id="typing-text"></div>
+          </div>
+      </div>
+  </header>
+  
+  <div class="container">
+      <!-- Event Timeline -->
+      <section class="mb-5">
+          <h2 class="text-center mb-4" style="color: var(--neon-blue);">Event Structure</h2>
+          
+          <div class="timeline">
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                      <h4 class="timeline-title">Phase 1: Strategy Discussion</h4>
+                      <p>Teams will have 30 minutes to discuss implementation strategy, break down their selected title into modules, and distribute tasks among team members.</p>
+                      <p class="text-white-50"><i class="fas fa-clock me-2"></i>Duration: 30 minutes</p>
+                  </div>
+              </div>
+              
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                      <h4 class="timeline-title">Phase 2: Module Implementation</h4>
+                      <p>Teams will write and implement code for their modules. After 3 hours, teams receive a dataset for execution and must pass test cases to qualify for the next phase.</p>
+                      <p class="text-white-50"><i class="fas fa-clock me-2"></i>Duration: 3 hours</p>
+                  </div>
+              </div>
+              
+              <div class="timeline-item">
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-content">
+                      <h4 class="timeline-title">Phase 3: UI Development</h4>
+                      <p>Teams develop a basic User Interface to enhance the usability of their implemented module. Judges will assess functionality, integration, and overall effectiveness.</p>
+                      <p class="text-white-50"><i class="fas fa-clock me-2"></i>Duration: 2 hours</p>
+                  </div>
+              </div>
+          </div>
+      </section>
+      
+      <!-- Registration Form -->
+      <form id="registration-form" class="needs-validation" novalidate>
+          <!-- Team Information Section -->
+          <div class="card mb-4">
+              <div class="cyber-corner corner-tl"></div>
+              <div class="cyber-corner corner-tr"></div>
+              <div class="cyber-corner corner-bl"></div>
+              <div class="cyber-corner corner-br"></div>
+              
+              <div class="card-header">
+                  <h3><i class="fas fa-users me-2"></i> Team Information</h3>
+              </div>
+              
+              <div class="card-body">
+                  <div class="row mb-3">
+                      <div class="col-md-6">
+                          <label for="team-name" class="form-label">Team Name</label>
+                          <input type="text" class="form-control" id="team-name" name="team-name" required>
+                          <div class="invalid-feedback">Please provide a team name.</div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                          <label for="num-members" class="form-label">Number of Team Members</label>
+                          <select class="form-select" id="num-members" name="num-members" required onchange="generateMemberFields()">
+                              <option value="" selected disabled>Select number of members</option>
+                          
+                              <option value="4">4 Members</option>
+                          </select>
+                          <div class="invalid-feedback">Please select the number of team members.</div>
+                      </div>
+                  </div>
+                  
+                  <div id="team-members-container"></div>
+              </div>
+          </div>
+          
+          <!-- Team Lead Contact Section -->
+          <div class="card mb-4">
+              <div class="cyber-corner corner-tl"></div>
+              <div class="cyber-corner corner-tr"></div>
+              <div class="cyber-corner corner-bl"></div>
+              <div class="cyber-corner corner-br"></div>
+              
+              <div class="card-header">
+                  <h3><i class="fas fa-user-tie me-2"></i> Team Lead Contact</h3>
+              </div>
+              
+              <div class="card-body">
+                  <div class="row">
+                      <div class="col-md-6 mb-3">
+                          <label for="lead-email" class="form-label">Email Address</label>
+                          <input type="email" class="form-control" id="lead-email" name="lead-email" required>
+                          <div class="invalid-feedback">Please provide a valid email address.</div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                          <label for="lead-phone" class="form-label">Phone Number</label>
+                          <input type="tel" class="form-control" id="lead-phone" name="lead-phone" pattern="[0-9]{10}" required>
+                          <div class="invalid-feedback">Please provide a valid 10-digit phone number.</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Payment Information Section -->
+          <div class="card mb-4">
+              <div class="cyber-corner corner-tl"></div>
+              <div class="cyber-corner corner-tr"></div>
+              <div class="cyber-corner corner-bl"></div>
+              <div class="cyber-corner corner-br"></div>
+              
+              <div class="card-header">
+                  <h3><i class="fas fa-credit-card me-2"></i> Payment Information</h3>
+              </div>
+              
+              <div class="card-body">
+                  <div class="row align-items-center">
+                      <div class="col-md-6 text-center mb-4 mb-md-0">
+                          <div class="qr-code-container">
+                              <!-- Replace with actual QR code image -->
+                              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=UPI_ID_HERE" alt="Payment QR Code" class="qr-code">
+                          </div>
+                          <p class="mt-2 text-center text-white-50">Scan to pay ₹50 per team member</p>
+                      </div>
+                      
+                      <div class="col-md-6">
+                          <label for="transaction-id" class="form-label">Transaction ID</label>
+                          <input type="text" class="form-control" id="transaction-id" name="transaction-id" required>
+                          <div class="form-text">Enter the transaction ID from your payment.</div>
+                          <div class="invalid-feedback">Please provide the transaction ID.</div>
+                          
+                          <div class="mt-3">
+                              <label for="payment-screenshot" class="form-label">Payment Screenshot</label>
+                              <input type="file" class="form-control" id="payment-screenshot" name="payment-screenshot" accept="image/*" required>
+                              <div class="form-text">Upload a screenshot of your payment confirmation.</div>
+                              <div class="invalid-feedback">Please upload a payment screenshot.</div>
+                          </div>
+                          
+                          <div class="mt-3">
+                              <label for="payment-amount" class="form-label">Payment Amount (₹)</label>
+                              <input type="number" class="form-control" id="payment-amount" name="payment-amount" required readonly>
+                              <div class="form-text">Total amount based on team size (₹50 per person).</div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Terms and Conditions -->
+          <div class="card mb-4">
+              <div class="cyber-corner corner-tl"></div>
+              <div class="cyber-corner corner-tr"></div>
+              <div class="cyber-corner corner-bl"></div>
+              <div class="cyber-corner corner-br"></div>
+              
+              <div class="card-header">
+                  <h3><i class="fas fa-file-contract me-2"></i> Terms and Conditions</h3>
+              </div>
+              
+              <div class="card-body">
+                  <div class="terms-container mb-3">
+                      <h5>Event Rules and Guidelines</h5>
+                      <ol>
+                          <li>All team members must be currently enrolled students at Nirma University.</li>
+                          <li>Teams will be given a random domain through a script and must select a title from a predefined list within that domain.</li>
+                          <li>Teams must follow the structured approach outlined for each phase.</li>
+                          <li>Plagiarism will result in immediate disqualification. All code must be original.</li>
+                          <li>Teams must pass the test cases in Phase 2 to be eligible for Phase 3.</li>
+                          <li>Judges' decisions are final and binding.</li>
+                          <li>The registration fee is non-refundable.</li>
+                          <li>All team members must be present on the day of the event with valid university ID cards.</li>
+                          <li>Teams must bring their own laptops and necessary tools. Internet access will be provided.</li>
+                          <li>The organizers reserve the right to modify the rules if necessary.</li>
+                      </ol>
+                     
+                      
+                  </div>
+                  
+                  <div class="form-check mb-3">
+                      <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                      <label class="form-check-label" for="termsCheck">
+                          I agree to the terms and conditions of the event
+                      </label>
+                      <div class="invalid-feedback">
+                          You must agree to the terms and conditions to register.
+                      </div>
+                  </div>
+                  
+                  <div class="form-check mb-3">
+                      <input class="form-check-input" type="checkbox" id="codeOfConductCheck" required>
+                      <label class="form-check-label" for="codeOfConductCheck">
+                          I understand that my team must adhere to the hackathon code of conduct
+                      </label>
+                      <div class="invalid-feedback">
+                          You must agree to the code of conduct to register.
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Submit Button -->
+          <div class="text-center mb-5">
+              <button type="submit" class="btn btn-cyber">
+                  <i class="fas fa-paper-plane me-2"></i> Submit Registration
+              </button>
+              <p class="text-white-50 mt-2">After submission, you'll receive a confirmation email with your team's details.</p>
+          </div>
+      </form>
+      
+      <!-- Registration Summary Sidebar -->
+      <div class="summary-panel" id="summary-panel">
+          <button class="summary-toggle" id="summary-toggle">
+              <i class="fas fa-chevron-left" id="toggle-icon"></i>
+          </button>
+          <h4 style="color: var(--neon-blue);">Registration Summary</h4>
+          <hr style="border-color: var(--neon-blue);">
+          
+          <div id="summary-content">
+              <p>Complete the form to see your registration summary.</p>
+          </div>
+      </div>
+  </div>
+  
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Create circuit board effect
+          const circuitBoard = document.getElementById('circuit-board');
+          const nodesToAdd = 30;
+          const linesToAdd = 40;
+          
+          // Create circuit nodes
+          for (let i = 0; i < nodesToAdd; i++) {
+              const node = document.createElement('div');
+              node.className = 'circuit-node';
+              
+              // Random position
+              const posX = Math.random() * 100;
+              const posY = Math.random() * 100;
+              node.style.left = `${posX}%`;
+              node.style.top = `${posY}%`;
+              
+              // Random size
+              const size = Math.random() * 4 + 3;
+              node.style.width = `${size}px`;
+              node.style.height = `${size}px`;
+              
+              // Random animation delay
+              const delay = Math.random() * 5;
+              node.style.animationDelay = `${delay}s`;
+              
+              circuitBoard.appendChild(node);
+          }
+          
+          // Create circuit lines
+          for (let i = 0; i < linesToAdd; i++) {
+              const line = document.createElement('div');
+              line.className = 'circuit-line';
+              
+              // Random position and size
+              const posX = Math.random() * 100;
+              const posY = Math.random() * 100;
+              const width = Math.random() * 100 + 50;
+              const height = 2;
+              
+              line.style.left = `${posX}%`;
+              line.style.top = `${posY}%`;
+              line.style.width = `${width}px`;
+              line.style.height = `${height}px`;
+              
+              // Random rotation
+              const rotation = Math.random() * 180;
+              line.style.transform = `rotate(${rotation}deg)`;
+              
+              circuitBoard.appendChild(line);
+          }
+          
+          // Create binary rain
+          const binaryContainer = document.getElementById('binary-container');
+          const binaryChars = '01';
+          const raindropsToAdd = 50;
+          
+          for (let i = 0; i < raindropsToAdd; i++) {
+              const raindrop = document.createElement('div');
+              raindrop.className = 'binary-rain';
+              
+              // Create random binary string
+              let binaryString = '';
+              const stringLength = Math.floor(Math.random() * 20) + 5;
+              
+              for (let j = 0; j < stringLength; j++) {
+                  binaryString += binaryChars.charAt(Math.floor(Math.random() * binaryChars.length));
+              }
+              
+              raindrop.textContent = binaryString;
+              
+              // Random position
+              const posX = Math.random() * 100;
+              raindrop.style.left = `${posX}%`;
+              
+              // Random speed
+              const duration = Math.random() * 15 + 5;
+              raindrop.style.animationDuration = `${duration}s`;
+              
+              // Random delay
+              const delay = Math.random() * 10;
+              raindrop.style.animationDelay = `-${delay}s`;
+              
+              binaryContainer.appendChild(raindrop);
+          }
+          
+          // Typing animation
+          const textElement = document.getElementById('typing-text');
+          const phrases = [
+              'Initializing hackathon protocols...',
+              'Compiling innovative solutions...',
+              'Deploying creative algorithms...',
+              'Optimizing code challenge parameters...',
+              'System ready for breakthrough ideas...'
+          ];
+          
+          let phraseIndex = 0;
+          let charIndex = 0;
+          let isDeleting = false;
+          let typingSpeed = 100;
+          
+          function typeText() {
+              const currentPhrase = phrases[phraseIndex];
+              
+              if (isDeleting) {
+                  // Deleting text
+                  textElement.innerHTML = currentPhrase.substring(0, charIndex - 1) + '<span class="typing-cursor">|</span>';
+                  charIndex--;
+                  typingSpeed = 50;
+              } else {
+                  // Typing text
+                  textElement.innerHTML = currentPhrase.substring(0, charIndex + 1) + '<span class="typing-cursor">|</span>';
+                  charIndex++;
+                  typingSpeed = 100;
+              }
+              
+              // Move to next phrase or start deleting
+              if (!isDeleting && charIndex === currentPhrase.length) {
+                  // Pause at the end of the phrase
+                  isDeleting = true;
+                  typingSpeed = 1000;
+              } else if (isDeleting && charIndex === 0) {
+                  isDeleting = false;
+                  phraseIndex = (phraseIndex + 1) % phrases.length;
+                  typingSpeed = 500;
+              }
+              
+              setTimeout(typeText, typingSpeed);
+          }
+          
+          // Start the typing animation
+          setTimeout(typeText, 1000);
+          
+          // Create floating particles
+          const particleContainer = document.getElementById('particle-container');
+          const particleCount = 100;
+          
+          for (let i = 0; i < particleCount; i++) {
+              const particle = document.createElement('div');
+              particle.className = 'particle';
+              
+              // Random position
+              const posX = Math.random() * window.innerWidth;
+              const posY = Math.random() * window.innerHeight;
+              particle.style.left = `${posX}px`;
+              particle.style.top = `${posY}px`;
+              
+              // Random size
+              const size = Math.random() * 4 + 1;
+              particle.style.width = `${size}px`;
+              particle.style.height = `${size}px`;
+              
+              // Random color
+              const colors = ['var(--neon-blue)', 'var(--neon-purple)', 'var(--neon-pink)', 'var(--success-color)'];
+              const color = colors[Math.floor(Math.random() * colors.length)];
+              particle.style.backgroundColor = color;
+              particle.style.boxShadow = `0 0 8px ${color}`;
+              
+              // Random animation duration
+              const duration = Math.random() * 10 + 8;
+              particle.style.animationDuration = `${duration}s`;
+              
+              // Random delay
+              const delay = Math.random() * 10;
+              particle.style.animationDelay = `${delay}s`;
+              
+              particleContainer.appendChild(particle);
+          }
+          
+          // Form validation
+          const form = document.querySelector('#registration-form');
+          
+          form.addEventListener('submit', function(event) {
+              if (!form.checkValidity()) {
+                  event.preventDefault();
+                  event.stopPropagation();
+              } else {
+                  event.preventDefault();
+                  alert('Registration submitted successfully! A confirmation email will be sent shortly.');
+                  updateSummary();
+              }
+              
+              form.classList.add('was-validated');
+          });
+          
+          // Handle summary panel toggle
+          const summaryPanel = document.getElementById('summary-panel');
+          const summaryToggle = document.getElementById('summary-toggle');
+          const toggleIcon = document.getElementById('toggle-icon');
+          
+          summaryToggle.addEventListener('click', function() {
+              summaryPanel.classList.toggle('show');
+              if (summaryPanel.classList.contains('show')) {
+                  toggleIcon.classList.remove('fa-chevron-left');
+                  toggleIcon.classList.add('fa-chevron-right');
+                  updateSummary();
+              } else {
+                  toggleIcon.classList.remove('fa-chevron-right');
+                  toggleIcon.classList.add('fa-chevron-left');
+              }
+          });
+          
+          // Listen for input changes to update payment amount
+          const numMembersSelect = document.getElementById('num-members');
+          const paymentAmount = document.getElementById('payment-amount');
+          
+          numMembersSelect.addEventListener('change', function() {
+              const numMembers = parseInt(this.value);
+              if (!isNaN(numMembers)) {
+                  paymentAmount.value = numMembers * 50;
+              }
+          });
+      });
+      
+      // Generate team member fields based on selected number
+      function generateMemberFields() {
+          const numMembers = document.getElementById('num-members').value;
+          const container = document.getElementById('team-members-container');
+          container.innerHTML = '';
+          
+          for (let i = 1; i <= numMembers; i++) {
+              const memberDiv = document.createElement('div');
+              memberDiv.className = 'team-member';
+              memberDiv.innerHTML = `
+                  <h5>Team Member ${i} ${i === 1 ? '(Team Lead)' : ''}</h5>
+                  <div class="row">
+                      <div class="col-md-6 mb-3">
+                          <label for="member-name-${i}" class="form-label">Full Name</label>
+                          <input type="text" class="form-control" id="member-name-${i}" name="member-name-${i}" required>
+                          <div class="invalid-feedback">Please provide the team member's name.</div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                          <label for="member-email-${i}" class="form-label">Email Address</label>
+                          <input type="email" class="form-control" id="member-email-${i}" name="member-email-${i}" required>
+                          <div class="invalid-feedback">Please provide a valid email address.</div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                          <label for="member-phone-${i}" class="form-label">Phone Number</label>
+                          <input type="tel" class="form-control" id="member-phone-${i}" name="member-phone-${i}" pattern="[0-9]{10}" required>
+                          <div class="invalid-feedback">Please provide a valid 10-digit phone number.</div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                          <label for="member-course-${i}" class="form-label">Course</label>
+                          <select class="form-select" id="member-course-${i}" name="member-course-${i}" required>
+                              <option value="" selected disabled>Select course</option>
+                              <option value="MCA">MCA (Sem-2)</option>
+                              <option value="MTECH">M.TECH (Sem-2)</option>
+                              <option value="BTECH">B.TECH (Sem-6)</option>
+                          </select>
+                          <div class="invalid-feedback">Please select the course.</div>
+                      </div>
+                      
+                      <div class="col-md-6 mb-3">
+                          <label for="member-enrollment-${i}" class="form-label">Roll Number</label>
+                          <input type="text" class="form-control" id="member-enrollment-${i}" name="member-enrollment-${i}" required>
+                          <div class="invalid-feedback">Please provide the enrollment number.</div>
+                      </div>
+                  </div>
+              `;
+              
+              container.appendChild(memberDiv);
+          }
+          
+          // Auto-update payment amount
+          const paymentAmount = document.getElementById('payment-amount');
+          paymentAmount.value = numMembers * 50;
+      }
+      
+      // Update summary panel with registration details
+      function updateSummary() {
+          const summaryContent = document.getElementById('summary-content');
+          const teamName = document.getElementById('team-name').value;
+          const numMembers = document.getElementById('num-members').value;
+          const paymentAmount = document.getElementById('payment-amount').value;
+          
+          let membersHtml = '';
+          for (let i = 1; i <= numMembers; i++) {
+              const memberName = document.getElementById(`member-name-${i}`)?.value || '';
+              const memberCourse = document.getElementById(`member-course-${i}`)?.value || '';
+              
+              if (memberName) {
+                  membersHtml += `
+                      <div>
+                          <strong>${i}. ${memberName}</strong>
+                          ${memberCourse ? `<span class="ms-2 badge bg-dark">${memberCourse}</span>` : ''}
+                      </div>
+                  `;
+              }
+          }
+          
+          summaryContent.innerHTML = `
+              <div class="mb-3">
+                  <h5 style="color: var(--neon-purple);">Team Details</h5>
+                  <p><strong>Team Name:</strong> ${teamName || 'Not provided'}</p>
+                  <p><strong>Team Size:</strong> ${numMembers || '0'} members</p>
+              </div>
+              
+              <div class="mb-3">
+                  <h5 style="color: var(--neon-purple);">Team Members</h5>
+                  ${membersHtml || '<p>No members added yet</p>'}
+              </div>
+              
+              <div>
+                  <h5 style="color: var(--neon-purple);">Payment</h5>
+                  <p><strong>Amount:</strong> ₹${paymentAmount || '0'}</p>
+              </div>
+          `;
+      }
+  </script>
+</body>
+</html>
