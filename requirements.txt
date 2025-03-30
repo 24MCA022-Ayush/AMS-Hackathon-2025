@@ -5,3 +5,4 @@ firebase-admin
 Werkzeug
 Flask-Session
 gunicorn
+sendgrid

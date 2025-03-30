@@ -18,6 +18,10 @@ from firebase_admin import credentials
 from firebase_admin import auth # Import auth
 from firebase_admin import db
 
+# --- SendGrid ---  <--- ADD THESE LINES
+import sendgrid
+from sendgrid.helpers.mail import Mail
+
 app = Flask(__name__, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024  # 1MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -191,6 +195,7 @@ def register_team():
     payment_amount = data.get('payment-amount')
 
     team_members = {}
+    team_member_1_email = None # Capture Team Member 1's email <--- ADD THIS LINE
     for i in range(1, int(num_members) + 1): # Assuming num_members is correctly validated on frontend
         member_data = {
             "Name": data.get(f'member-name-{i}'),
@@ -200,6 +205,8 @@ def register_team():
             "Roll_No": data.get(f'member-enrollment-{i}')
         }
         team_members[f'Team_Member_{i}'] = member_data
+        if i == 1: # Get email of Team Member 1 <--- ADD THIS BLOCK
+            team_member_1_email = member_data["Email"]
 
     payment_info = {
         "Trans_Id": transaction_id,
@@ -208,7 +215,9 @@ def register_team():
 
     try:
         # --- Firebase Authentication ---
-        email = f"{team_name}@hackathon.ams"
+        # Sanitize team_name to remove spaces for email address  <--- ADDED CODE
+        sanitized_team_name = team_name.replace(" ", "_") # Replace spaces with underscores
+        email = f"{sanitized_team_name}@hackathon.ams"
         password = team_name # As per your request - consider stronger passwords in production
 
         try:
@@ -244,7 +253,42 @@ def register_team():
 
         teams_data_ref.child(firebase_uid).set(team_data_payload) # Use Firebase UID as key
 
-        return jsonify({"status": "success", "message": "Team registered successfully!"}), 200
+         # --- Send Registration Confirmation Email ---  <--- START OF ADDED CODE BLOCK
+        if team_member_1_email:
+            try:
+                sg = sendgrid.SendGridAPIClient(api_key=os.environ.get('SENDGRID_API_KEY')) # Initialize SendGrid client
+
+                from_email = "your-verified-sendgrid-email@example.com"  # Replace with your verified SendGrid email
+                to_email = team_member_1_email
+                subject = "CodeBlocs Hackathon 2025 - Registration Successful!"
+                plain_text_content = f"Congratulations Team {team_name}!\n\n" \
+                                     f"Your registration for CodeBlocs Hackathon 2025 is successful.\n\n" \
+                                     f"Your Secret Key is: {secret_key}\n\n" \
+                                     f"Please keep this key safe as it will be needed for future access.\n\n" \
+                                     f"We look forward to seeing you at the hackathon!\n\n" \
+                                     f"Best regards,\n" \
+                                     f"The CodeBlocs Hackathon Team"
+                html_content = f"<p>Congratulations Team {team_name}!</p>" \
+                               f"<p>Your registration for CodeBlocs Hackathon 2025 is successful.</p>" \
+                               f"<p><b>Your Secret Key is: {secret_key}</b></p>" \
+                               f"<p>Please keep this key safe as it will be needed for future access.</p>" \
+                               f"<p>We look forward to seeing you at the hackathon!</p>" \
+                               f"<p>Best regards,<br>The CodeBlocs Hackathon Team</p>"
+
+                message = Mail(from_email=from_email, to_emails=to_email, subject=subject, plain_text_content=plain_text_content, html_content=html_content)
+
+                response = sg.send(message)
+                print(f"Email sent to {team_member_1_email}, status code: {response.status_code}") # Log email sending status
+                if response.status_code >= 400: # Log error if email sending fails
+                    print(f"Email sending error: {response.body}")
+
+            except Exception as e:
+                print(f"SendGrid Email Sending Error: {e}") # Log any SendGrid related errors
+                # Consider whether to return an error to the user or just log and continue.
+                # For registration success, often logging and continuing is acceptable if email is non-critical.
+
+
+        return jsonify({"status": "success", "message": "Team registered successfully! Please check Team Member 1's email for confirmation."}), 200
 
     except Exception as db_error:
         print(f"Firebase Database Error: {db_error}")
