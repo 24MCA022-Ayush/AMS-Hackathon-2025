@@ -336,11 +336,6 @@ def verify_team_secret():
             secret_key_db = team_info.get('Secret_Key')
             if secret_key_entered == secret_key_db:
                 return jsonify({"status": "success", "message": "Team verified!", "uid": uid}), 200
-            else: # <-- ADDED ELSE BLOCK
-                return jsonify({"status": "error", "message": "Invalid Access Code"}), 401
-        else: # <-- ADDED ELSE BLOCK FOR TEAM NOT FOUND
-            return jsonify({"status": "error", "message": "Invalid Team Name"}), 401
-        
     except Exception as e:
         print(f"Error verifying team secret: {e}")
     return jsonify({"status": "error", "message": "Invalid Team Name or Access Code"}), 401
