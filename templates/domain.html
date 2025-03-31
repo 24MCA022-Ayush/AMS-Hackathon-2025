@@ -1454,7 +1454,8 @@
 
 <script>
     const codeInputs = document.querySelectorAll('.code-input');
-    
+    const secretKeyError = document.getElementById('secret-key-error');
+
     function populateTeamNames() {
         fetch('/api/get_teams')
             .then(response => response.json())
