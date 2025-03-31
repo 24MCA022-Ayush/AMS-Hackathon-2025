@@ -304,6 +304,10 @@ def login_page():
         return redirect("/hackathon") # Redirect to hackathon page
     return render_template('login.html') # Serve login page at /login if not logged in
 
+@app.route('/domain')
+def domain_page():
+    return render_template('domain.html') # Serve registration page
+
 @app.route('/api/get_teams', methods=['GET'])
 def get_teams():
     try:
