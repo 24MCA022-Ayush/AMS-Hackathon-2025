@@ -1227,14 +1227,6 @@
                             <label for="team-name" class="form-label">Select Your Team</label>
                             <select class="form-select" id="team-name" name="team-name" required>
                                 <option value="" selected disabled>Select your team</option>
-                                <option value="byte_busters">Byte Busters</option>
-                                <option value="code_crusaders">Code Crusaders</option>
-                                <option value="debug_demons">Debug Demons</option>
-                                <option value="syntax_savants">Syntax Savants</option>
-                                <option value="algo_avengers">Algo Avengers</option>
-                                <option value="tech_titans">Tech Titans</option>
-                                <option value="quantum_questers">Quantum Questers</option>
-                                <option value="binary_bosses">Binary Bosses</option>
                             </select>
                             <div class="invalid-feedback">Please select your team name.</div>
                             <div class="mt-2" id="team-select-error" style="color: var(--neon-pink); display: none;">
@@ -1461,6 +1453,8 @@
 </footer>
 
 <script>
+    const codeInputs = document.querySelectorAll('.code-input');
+    
     function populateTeamNames() {
         fetch('/api/get_teams')
             .then(response => response.json())
@@ -1860,7 +1854,7 @@
         let selectedSubdomain = '';
         
         // Step 1: Team Authentication
-        const codeInputs = document.querySelectorAll('.code-input');
+        
         const verifyTeamBtn = document.getElementById('verify-team');
         
         // Auto-navigate between code inputs
