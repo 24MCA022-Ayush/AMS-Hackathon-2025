@@ -304,6 +304,38 @@ def login_page():
         return redirect("/hackathon") # Redirect to hackathon page
     return render_template('login.html') # Serve login page at /login if not logged in
 
+@app.route('/api/get_teams', methods=['GET'])
+def get_teams():
+    try:
+        teams_data = teams_data_ref.get()
+        if teams_data:
+            team_names = []
+            for uid, team_info in teams_data.items():
+                team_names.append(team_info.get('Team_Name'))
+            return jsonify({"status": "success", "team_names": team_names}), 200
+        else:
+            return jsonify({"status": "success", "team_names": []}), 200
+    except Exception as e:
+        print(f"Error fetching team names from Firebase: {e}")
+        return jsonify({"status": "error", "message": "Failed to fetch team names"}), 500
+    
+@app.route('/api/verify_team_secret', methods=['POST'])
+def verify_team_secret():
+    data = request.get_json()
+    team_name = data.get('teamName')
+    secret_key_entered = data.get('secretKey')
+
+    try:
+        teams_data = teams_data_ref.order_by_child('Team_Name').equal_to(team_name).get()
+        if teams_data:
+            uid, team_info = next(iter(teams_data.items()))
+            secret_key_db = team_info.get('Secret_Key')
+            if secret_key_entered == secret_key_db:
+                return jsonify({"status": "success", "message": "Team verified!", "uid": uid}), 200
+    except Exception as e:
+        print(f"Error verifying team secret: {e}")
+    return jsonify({"status": "error", "message": "Invalid Team Name or Access Code"}), 401
+
 @app.route('/hackathon')
 @login_required # Protect hackathon page
 def hackathon_page():

@@ -1237,6 +1237,10 @@
                                 <option value="binary_bosses">Binary Bosses</option>
                             </select>
                             <div class="invalid-feedback">Please select your team name.</div>
+                            <div class="mt-2" id="team-select-error" style="color: var(--neon-pink); display: none;">
+                                        Error loading team names. Please refresh page.
+                            </div>
+                                                    
                         </div>
                         
                         <div class="col-md-6">
@@ -1250,7 +1254,11 @@
                                 <input type="text" class="form-control code-input" maxlength="1" id="code-6" required>
                             </div>
                             <div class="invalid-feedback text-center mt-2">Please enter the complete 6-digit code.</div>
+                            <div class="mt-2 text-center" id="secret-key-error" style="color: var(--neon-pink); display: none;">
+                                    Invalid Access Code. Please try again.
+                            </div>
                         </div>
+
                     </div>
                     
                     <div class="text-center">
@@ -1453,7 +1461,38 @@
 </footer>
 
 <script>
+    function populateTeamNames() {
+        fetch('/api/get_teams')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const teamNamesSelect = document.getElementById('team-name');
+                    data.team_names.forEach(teamName => {
+                        const option = document.createElement('option');
+                        option.value = teamName;
+                        option.textContent = teamName;
+                        teamNamesSelect.appendChild(option);
+                    });
+                } else {
+                    console.error("Error fetching team names:", data.message);
+                    document.getElementById('team-select-error').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching team names:", error);
+                document.getElementById('team-select-error').style.display = 'block';
+            });
+    }
+
+    function clearErrorMessages() {
+        document.getElementById('team-select-error').style.display = 'none';
+        document.getElementById('secret-key-error').style.display = 'none';
+        codeInputs.forEach(input => input.classList.remove('is-invalid'));
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        populateTeamNames();
+
         // Create circuit board effect
         const circuitBoard = document.getElementById('circuit-board');
         const nodesToAdd = 30;
@@ -1845,9 +1884,10 @@
         
         // Verify team and proceed to Step 2
         verifyTeamBtn.addEventListener('click', function() {
+            clearErrorMessages(); // Clear any previous errors
             const teamName = document.getElementById('team-name').value;
             let codeComplete = true;
-            
+
             codeInputs.forEach(input => {
                 if (input.value.length === 0) {
                     codeComplete = false;
@@ -1856,11 +1896,39 @@
                     input.classList.remove('is-invalid');
                 }
             });
-            
+
             if (teamName && codeComplete) {
-                // Go to Step 2: Domain Assignment
-                goToStep(1);
-                startDomainAssignment();
+                // Verify team and secret key with backend
+                const secretKey = Array.from(codeInputs).map(input => input.value).join('');
+
+                fetch('/api/verify_team_secret', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ teamName: teamName, secretKey: secretKey })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Go to Step 2: Domain Assignment
+                        goToStep(1);
+                        startDomainAssignment();
+                    } else {
+                        // Show error message for invalid secret key
+                        secretKeyError.style.display = 'block';
+                        codeInputs.forEach(input => {
+                            input.classList.add('is-invalid');
+                            input.value = ''; // Clear inputs on error
+                        });
+                        codeInputs[0].focus(); // Focus on the first input
+                    }
+                })
+                .catch(error => {
+                    console.error("Error verifying team secret:", error);
+                    secretKeyError.textContent = "An error occurred while verifying. Please try again.";
+                    secretKeyError.style.display = 'block';
+                })
             } else {
                 if (!teamName) {
                     document.getElementById('team-name').classList.add('is-invalid');
